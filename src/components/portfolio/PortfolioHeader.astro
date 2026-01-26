@@ -1,0 +1,248 @@
+---
+/**
+ * PortfolioHeader Component
+ *
+ * Header section displaying personal branding and navigation.
+ */
+
+interface Props {
+  name?: string;
+  title?: string;
+  subtitle?: string;
+  currentSection?: 'about' | 'projects' | 'contact';
+}
+
+const {
+  name = 'Tu Nombre',
+  title = 'CTO & Full Stack Developer',
+  subtitle = '+3 años de experiencia',
+  currentSection = 'projects'
+} = Astro.props;
+---
+
+<header class="portfolio-header">
+  <div class="portfolio-header__brand">
+    <h1 class="portfolio-header__name">{name}</h1>
+    <div class="portfolio-header__titles">
+      <span class="portfolio-header__title">{title}</span>
+      <span class="portfolio-header__divider">•</span>
+      <span class="portfolio-header__subtitle">{subtitle}</span>
+    </div>
+  </div>
+
+  <nav class="portfolio-header__nav">
+    <button
+      type="button"
+      class:list={[
+        'portfolio-header__link',
+        { 'portfolio-header__link--active': currentSection === 'about' }
+      ]}
+      data-section="about"
+    >
+      Sobre Mí
+    </button>
+    <button
+      type="button"
+      class:list={[
+        'portfolio-header__link',
+        { 'portfolio-header__link--active': currentSection === 'projects' }
+      ]}
+      data-section="projects"
+    >
+      Proyectos
+    </button>
+    <button
+      type="button"
+      class:list={[
+        'portfolio-header__link',
+        { 'portfolio-header__link--active': currentSection === 'contact' }
+      ]}
+      data-section="contact"
+    >
+      Contacto
+    </button>
+  </nav>
+</header>
+
+<script>
+  function initNavigation() {
+    const navLinks = document.querySelectorAll('.portfolio-header__link');
+    const allSections = document.querySelectorAll('.section');
+    const projectInfo = document.getElementById('project-info');
+    const controlsHint = document.querySelector('.controls-hint');
+
+    navLinks.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const section = target.dataset.section;
+
+        // Update active state on nav links
+        navLinks.forEach((link) => {
+          link.classList.remove('portfolio-header__link--active');
+        });
+        target.classList.add('portfolio-header__link--active');
+
+        // Hide ALL sections first
+        allSections.forEach((sec) => {
+          sec.classList.remove('section--active');
+        });
+
+        // Show target section
+        const targetSection = document.getElementById(`section-${section}`);
+        if (targetSection) {
+          targetSection.classList.add('section--active');
+        }
+
+        // Hide project info panel when navigating away from projects
+        if (section !== 'projects' && projectInfo) {
+          projectInfo.classList.remove('active');
+          // Also reset carousel view if available
+          if ((window as any).resetCarouselView) {
+            (window as any).resetCarouselView();
+          }
+        }
+
+        // Show/hide controls hint based on section
+        if (controlsHint) {
+          if (section === 'projects') {
+            (controlsHint as HTMLElement).style.display = 'block';
+          } else {
+            (controlsHint as HTMLElement).style.display = 'none';
+          }
+        }
+
+        console.log('Switched to section:', section);
+      });
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavigation);
+  } else {
+    initNavigation();
+  }
+</script>
+
+<style>
+  .portfolio-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    z-index: 100;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 12, 0.95) 0%,
+      rgba(10, 10, 12, 0) 100%
+    );
+    pointer-events: none;
+  }
+
+  .portfolio-header__brand {
+    pointer-events: auto;
+  }
+
+  .portfolio-header__name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent-color, #00d4ff);
+    line-height: 1;
+  }
+
+  .portfolio-header__titles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .portfolio-header__title {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+
+  .portfolio-header__divider {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.75rem;
+  }
+
+  .portfolio-header__subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .portfolio-header__nav {
+    display: flex;
+    gap: 32px;
+    pointer-events: auto;
+  }
+
+  .portfolio-header__link {
+    position: relative;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+  }
+
+  .portfolio-header__link:hover {
+    color: #ffffff;
+  }
+
+  .portfolio-header__link--active {
+    color: var(--accent-color, #00d4ff);
+  }
+
+  .portfolio-header__link--active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-color, #00d4ff);
+    border-radius: 1px;
+  }
+
+  @media (max-width: 768px) {
+    .portfolio-header {
+      padding: 16px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .portfolio-header__titles {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .portfolio-header__divider {
+      display: none;
+    }
+
+    .portfolio-header__nav {
+      gap: 20px;
+    }
+
+    .portfolio-header__link {
+      font-size: 0.8rem;
+    }
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+/**
+ * Portfolio Home Page
+ *
+ * Main landing page featuring the 3D project carousel.
+ * Showcases professional work as a CTO & Full Stack Developer.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Carousel3D from '../components/portfolio/Carousel3D.astro';
+import ProjectInfo from '../components/portfolio/ProjectInfo.astro';
+import PortfolioHeader from '../components/portfolio/PortfolioHeader.astro';
+import ControlsHint from '../components/portfolio/ControlsHint.astro';
+import AboutSection from '../components/portfolio/AboutSection.astro';
+import ContactSection from '../components/portfolio/ContactSection.astro';
+import SectionTitle from '../components/portfolio/SectionTitle.astro';
+---
+
+<Layout>
+  <main class="portfolio">
+    <!-- Header with personal branding -->
+    <PortfolioHeader
+      name="Tu Nombre"
+      title="CTO & Full Stack Developer"
+      subtitle="+3 años de experiencia"
+      currentSection="projects"
+    />
+
+    <!-- About Section -->
+    <AboutSection />
+
+    <!-- Contact Section -->
+    <ContactSection />
+
+    <!-- 3D Project Carousel (default visible) -->
+    <section id="section-projects" class="section section--active portfolio__canvas">
+      <Carousel3D />
+      <!-- Section title -->
+      <SectionTitle
+        title="Proyectos"
+        subtitle="Explora mi trabajo - haz clic en una tarjeta para ver detalles"
+        section="projects"
+      />
+      <!-- Controls hint (only visible in projects section) -->
+      <ControlsHint />
+    </section>
+
+    <!-- Project Details Panel -->
+    <ProjectInfo />
+
+    <!-- Background gradient effects -->
+    <div class="portfolio__background">
+      <div class="portfolio__gradient portfolio__gradient--primary"></div>
+      <div class="portfolio__gradient portfolio__gradient--secondary"></div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .portfolio {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .section {
+    display: none;
+  }
+
+  .section--active {
+    display: flex;
+  }
+
+  .portfolio__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .portfolio__canvas.section--active {
+    display: block;
+  }
+
+  /* Background Effects */
+  .portfolio__background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .portfolio__gradient {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  .portfolio__gradient--primary {
+    width: 600px;
+    height: 600px;
+    background: var(--accent-color, #00d4ff);
+    top: -200px;
+    right: -200px;
+  }
+
+  .portfolio__gradient--secondary {
+    width: 500px;
+    height: 500px;
+    background: var(--accent-secondary, #ff00d4);
+    bottom: -150px;
+    left: -150px;
+    animation-delay: 4s;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.15;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.2;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio__gradient {
+      animation: none;
+    }
+  }
+</style>

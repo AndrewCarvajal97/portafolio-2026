@@ -1,0 +1,141 @@
+---
+/**
+ * SectionTitle Component
+ *
+ * Displays an animated title for each section of the portfolio.
+ */
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  section: 'about' | 'projects' | 'contact';
+  class?: string;
+}
+
+const { title, subtitle, section, class: className = '' } = Astro.props;
+---
+
+<div id="section-title-projects" class:list={['section-title', `section-title--${section}`, className]} data-section={section}>
+  <h2 class="section-title__heading">{title}</h2>
+  {subtitle && <p class="section-title__subtitle">{subtitle}</p>}
+  <div class="section-title__line"></div>
+</div>
+
+<script>
+  // Hide section title when project is selected
+  document.addEventListener('project-selected', () => {
+    const title = document.getElementById('section-title-projects');
+    if (title) {
+      title.classList.add('section-title--hidden');
+    }
+  });
+
+  document.addEventListener('project-deselected', () => {
+    const title = document.getElementById('section-title-projects');
+    if (title) {
+      title.classList.remove('section-title--hidden');
+    }
+  });
+</script>
+
+<style>
+  .section-title {
+    position: absolute;
+    left: 40px;
+    bottom: 80px;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .section-title__heading {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .section-title__subtitle {
+    margin: 12px 0 0 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
+  .section-title__line {
+    width: 60px;
+    height: 4px;
+    background: var(--accent-color, #00d4ff);
+    margin-top: 16px;
+    border-radius: 2px;
+    box-shadow: 0 0 20px var(--accent-color, #00d4ff);
+  }
+
+  /* Section-specific styling */
+  .section-title--projects .section-title__heading {
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-color, #00d4ff) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-title--about .section-title__line {
+    background: linear-gradient(90deg, var(--accent-color, #00d4ff), var(--accent-secondary, #ff00d4));
+  }
+
+  .section-title--contact .section-title__line {
+    background: var(--accent-secondary, #ff00d4);
+    box-shadow: 0 0 20px var(--accent-secondary, #ff00d4);
+  }
+
+  /* Animation */
+  .section-title__heading,
+  .section-title__subtitle,
+  .section-title__line {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .section-title__subtitle {
+    animation-delay: 0.1s;
+  }
+
+  .section-title__line {
+    animation-delay: 0.2s;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Hidden state when project selected */
+  .section-title--hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .section-title {
+      left: 20px;
+      bottom: 120px;
+    }
+
+    .section-title__heading {
+      font-size: 2rem;
+    }
+
+    .section-title__subtitle {
+      font-size: 0.875rem;
+    }
+  }
+</style>

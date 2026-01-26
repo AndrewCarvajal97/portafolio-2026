@@ -1,0 +1,111 @@
+---
+/**
+ * ControlsHint Component
+ *
+ * Displays user interaction hints at the bottom of the screen.
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['controls-hint', className]}>
+  <div class="controls-hint__items">
+    <span class="controls-hint__item">
+      <kbd class="controls-hint__key">Arrastra</kbd>
+      <span class="controls-hint__text">para girar</span>
+    </span>
+    <span class="controls-hint__divider">•</span>
+    <span class="controls-hint__item">
+      <kbd class="controls-hint__key">Click</kbd>
+      <span class="controls-hint__text">para ver detalles</span>
+    </span>
+    <span class="controls-hint__divider">•</span>
+    <span class="controls-hint__item">
+      <kbd class="controls-hint__key">ESC</kbd>
+      <span class="controls-hint__text">para volver</span>
+    </span>
+  </div>
+</div>
+
+<style>
+  .controls-hint {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  .controls-hint__items {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 24px;
+    background: rgba(15, 15, 20, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+  }
+
+  .controls-hint__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .controls-hint__key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-color, #00d4ff);
+    white-space: nowrap;
+  }
+
+  .controls-hint__text {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .controls-hint__divider {
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    .controls-hint {
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      transform: none;
+    }
+
+    .controls-hint__items {
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px 20px;
+      border-radius: 16px;
+    }
+
+    .controls-hint__divider {
+      display: none;
+    }
+  }
+
+  @media (max-height: 500px) {
+    .controls-hint {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+/**
+ * Carousel3D Component
+ *
+ * Main 3D carousel component that displays projects in an interactive
+ * circular arrangement. Uses Three.js for rendering.
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div id="carousel-container" class:list={['carousel-container', className]}>
+  <!-- Three.js canvas will be appended here -->
+</div>
+
+<script>
+  import { SceneManager, Carousel, InputController, TweenManager } from '../../lib/three';
+  import { projects } from '../../data/projects';
+  import type { Project } from '../../types/project';
+
+  class Carousel3DController {
+    private sceneManager: SceneManager;
+    private carousel: Carousel;
+    private inputController: InputController;
+    private tweenManager: TweenManager;
+    private container: HTMLElement;
+
+    constructor() {
+      const container = document.getElementById('carousel-container');
+      if (!container) {
+        console.error('Carousel container not found');
+        return;
+      }
+      this.container = container;
+
+      try {
+        // Initialize Three.js scene
+        this.sceneManager = SceneManager.getInstance();
+        this.sceneManager.initialize(container);
+
+        // Note: TweenManager loop is NOT started here because SceneManager
+        // already calls tweenUpdate() in its render loop
+        this.tweenManager = TweenManager.getInstance();
+
+        // Create carousel with projects
+        this.carousel = new Carousel(projects);
+
+        // Setup input handling
+        this.inputController = new InputController(this.carousel, container);
+
+        // Setup event listeners for UI updates
+        this.setupEventListeners();
+
+        // Start rendering
+        this.sceneManager.start();
+
+        console.log('Carousel3D initialized successfully with', projects.length, 'projects');
+      } catch (error) {
+        console.error('Error initializing Carousel3D:', error);
+      }
+    }
+
+    private setupEventListeners(): void {
+      // Listen for project selection
+      this.carousel.on('projectSelect', (event) => {
+        console.log('Carousel event: projectSelect', event.project?.title);
+        if (event.project) {
+          this.dispatchProjectEvent('project-selected', event.project);
+        }
+      });
+
+      // Listen for project deselection
+      this.carousel.on('projectDeselect', (event) => {
+        console.log('Carousel event: projectDeselect');
+        this.dispatchProjectEvent('project-deselected', null);
+      });
+    }
+
+    private dispatchProjectEvent(eventName: string, project: Project | null): void {
+      console.log('Dispatching event:', eventName, project?.title);
+
+      // Dispatch on document for global listeners
+      const docEvent = new CustomEvent(eventName, {
+        detail: { project },
+        bubbles: true,
+        cancelable: true
+      });
+      document.dispatchEvent(docEvent);
+
+      // Also dispatch on container
+      const containerEvent = new CustomEvent(eventName, {
+        detail: { project },
+        bubbles: true,
+        cancelable: true
+      });
+      this.container.dispatchEvent(containerEvent);
+    }
+
+    public resetView(): void {
+      this.carousel.resetView();
+    }
+
+    public dispose(): void {
+      this.inputController?.dispose();
+      this.carousel?.dispose();
+      this.tweenManager?.dispose();
+      this.sceneManager?.dispose();
+    }
+  }
+
+  // Initialize when DOM is ready
+  let controller: Carousel3DController | null = null;
+
+  // Try multiple initialization strategies
+  function initCarousel() {
+    if (controller) return;
+    controller = new Carousel3DController();
+    (window as any).resetCarouselView = () => controller?.resetView();
+  }
+
+  // Initialize on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCarousel);
+  } else {
+    // DOM already loaded
+    initCarousel();
+  }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    controller?.dispose();
+  });
+</script>
+
+<style>
+  .carousel-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .carousel-container :global(canvas) {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>

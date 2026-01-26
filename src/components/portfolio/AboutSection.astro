@@ -1,0 +1,250 @@
+---
+/**
+ * AboutSection Component
+ *
+ * Displays information about the developer including
+ * skills, experience, and background.
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const skills = [
+  { category: 'Frontend', items: ['React', 'Vue.js', 'TypeScript', 'Next.js', 'Astro'] },
+  { category: 'Backend', items: ['Node.js', 'Python', 'Go', 'PostgreSQL', 'MongoDB'] },
+  { category: 'DevOps', items: ['Docker', 'Kubernetes', 'AWS', 'CI/CD', 'Terraform'] },
+  { category: 'Tools', items: ['Git', 'Linux', 'Figma', 'Jira', 'Notion'] }
+];
+
+const stats = [
+  { value: '3+', label: 'Años de Experiencia' },
+  { value: '50+', label: 'Proyectos Completados' },
+  { value: '20+', label: 'Clientes Satisfechos' },
+  { value: '10+', label: 'Tecnologías Dominadas' }
+];
+---
+
+<section id="section-about" class:list={['section', 'about-section', className]}>
+  <div class="about-section__container">
+    <div class="about-section__content">
+      <h2 class="about-section__title">
+        <span class="about-section__title-accent">Sobre</span> Mí
+      </h2>
+
+      <p class="about-section__intro">
+        Soy un desarrollador Full Stack y CTO con más de 3 años de experiencia
+        creando soluciones digitales innovadoras. Mi pasión es transformar ideas
+        complejas en productos elegantes y funcionales.
+      </p>
+
+      <p class="about-section__description">
+        He liderado equipos de desarrollo, diseñado arquitecturas escalables y
+        entregado proyectos que han impactado positivamente a miles de usuarios.
+        Mi enfoque combina excelencia técnica con una visión estratégica del
+        negocio.
+      </p>
+
+      <div class="about-section__stats">
+        {
+          stats.map((stat) => (
+            <div class="stat">
+              <span class="stat__value">{stat.value}</span>
+              <span class="stat__label">{stat.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="about-section__skills">
+      <h3 class="about-section__subtitle">Habilidades Técnicas</h3>
+
+      <div class="skills-grid">
+        {
+          skills.map((skillGroup) => (
+            <div class="skill-group">
+              <h4 class="skill-group__title">{skillGroup.category}</h4>
+              <div class="skill-group__items">
+                {skillGroup.items.map((skill) => (
+                  <span class="skill-tag">{skill}</span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 40px 40px;
+    overflow-y: auto;
+    z-index: 2;
+  }
+
+  .about-section.section--active {
+    display: flex;
+  }
+
+  .about-section__container {
+    max-width: 1000px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-section__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .about-section__title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .about-section__title-accent {
+    color: var(--accent-color, #00d4ff);
+  }
+
+  .about-section__intro {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .about-section__description {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .about-section__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat__value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color, #00d4ff);
+    line-height: 1;
+  }
+
+  .stat__label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .about-section__skills {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .about-section__subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .skill-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .skill-group__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+
+  .skill-group__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+  }
+
+  .skill-tag:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--accent-color, #00d4ff);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .about-section {
+      padding: 120px 20px 40px;
+    }
+
+    .about-section__container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .about-section__title {
+      font-size: 2rem;
+    }
+
+    .about-section__intro {
+      font-size: 1.1rem;
+    }
+
+    .about-section__stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .stat__value {
+      font-size: 2rem;
+    }
+  }
+</style>

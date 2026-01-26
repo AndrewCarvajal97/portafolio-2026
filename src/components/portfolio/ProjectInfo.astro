@@ -1,0 +1,429 @@
+---
+/**
+ * ProjectInfo Component
+ *
+ * Displays detailed information about the selected project.
+ * Appears when a project card is clicked in the carousel.
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<aside id="project-info" class:list={['project-info', className]}>
+  <div class="project-info__content">
+    <header class="project-info__header">
+      <span class="project-info__year" id="proj-year"></span>
+      <h2 class="project-info__title" id="proj-title">Título del Proyecto</h2>
+      <span class="project-info__role" id="proj-role"></span>
+    </header>
+
+    <div class="project-info__tags" id="proj-tags"></div>
+
+    <p class="project-info__description" id="proj-desc">
+      Descripción del proyecto...
+    </p>
+
+    <div class="project-info__links" id="proj-links"></div>
+
+    <button id="close-btn" class="project-info__close" type="button">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+      </svg>
+      <span>Volver al Carrusel</span>
+    </button>
+  </div>
+</aside>
+
+<script>
+  import type { Project } from '../../types/project';
+
+  class ProjectInfoController {
+    private panel: HTMLElement | null;
+    private titleEl: HTMLElement | null;
+    private descEl: HTMLElement | null;
+    private tagsEl: HTMLElement | null;
+    private linksEl: HTMLElement | null;
+    private yearEl: HTMLElement | null;
+    private roleEl: HTMLElement | null;
+    private closeBtn: HTMLElement | null;
+    private initialized = false;
+
+    constructor() {
+      this.panel = document.getElementById('project-info');
+      this.titleEl = document.getElementById('proj-title');
+      this.descEl = document.getElementById('proj-desc');
+      this.tagsEl = document.getElementById('proj-tags');
+      this.linksEl = document.getElementById('proj-links');
+      this.yearEl = document.getElementById('proj-year');
+      this.roleEl = document.getElementById('proj-role');
+      this.closeBtn = document.getElementById('close-btn');
+
+      if (this.panel && this.titleEl && this.descEl) {
+        this.setupEventListeners();
+        this.initialized = true;
+        console.log('ProjectInfoController initialized');
+      } else {
+        console.error('ProjectInfoController: Required elements not found');
+      }
+    }
+
+    private setupEventListeners(): void {
+      // Listen for project selection from carousel - use document to catch bubbled events
+      document.addEventListener('project-selected', ((event: CustomEvent) => {
+        console.log('project-selected event received', event.detail);
+        const { project } = event.detail;
+        if (project) {
+          this.show(project);
+        }
+      }) as EventListener);
+
+      // Listen for project deselection
+      document.addEventListener('project-deselected', () => {
+        console.log('project-deselected event received');
+        this.hide();
+      });
+
+      // Close button
+      if (this.closeBtn) {
+        this.closeBtn.addEventListener('click', () => {
+          console.log('Close button clicked');
+          if ((window as any).resetCarouselView) {
+            (window as any).resetCarouselView();
+          }
+          this.hide();
+        });
+      }
+
+      // Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.panel?.classList.contains('active')) {
+          if ((window as any).resetCarouselView) {
+            (window as any).resetCarouselView();
+          }
+          this.hide();
+        }
+      });
+    }
+
+    private show(project: Project): void {
+      if (!this.panel || !this.titleEl || !this.descEl) return;
+
+      console.log('Showing project info for:', project.title);
+
+      // Update content
+      this.titleEl.textContent = project.title;
+      this.descEl.textContent = project.longDescription || project.description;
+
+      // Year
+      if (this.yearEl) {
+        if (project.year) {
+          this.yearEl.textContent = project.year.toString();
+          this.yearEl.style.display = 'block';
+        } else {
+          this.yearEl.style.display = 'none';
+        }
+      }
+
+      // Role
+      if (this.roleEl) {
+        if (project.role) {
+          this.roleEl.textContent = project.role;
+          this.roleEl.style.display = 'block';
+        } else {
+          this.roleEl.style.display = 'none';
+        }
+      }
+
+      // Tags
+      if (this.tagsEl) {
+        this.tagsEl.innerHTML = '';
+        project.tags.forEach((tag) => {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = tag;
+          this.tagsEl!.appendChild(span);
+        });
+      }
+
+      // Links
+      if (this.linksEl) {
+        this.linksEl.innerHTML = '';
+        if (project.links && project.links.length > 0) {
+          project.links.forEach((link) => {
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = `link link--${link.type}`;
+            a.innerHTML = this.getLinkIcon(link.type) + (link.label || this.getLinkLabel(link.type));
+            this.linksEl!.appendChild(a);
+          });
+        }
+      }
+
+      // Show panel
+      this.panel.classList.add('active');
+    }
+
+    private hide(): void {
+      if (this.panel) {
+        this.panel.classList.remove('active');
+      }
+    }
+
+    private getLinkIcon(type: string): string {
+      const icons: Record<string, string> = {
+        github: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`,
+        live: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`,
+        demo: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
+        documentation: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`
+      };
+      return icons[type] || '';
+    }
+
+    private getLinkLabel(type: string): string {
+      const labels: Record<string, string> = {
+        github: 'Ver Código',
+        live: 'Ver Proyecto',
+        demo: 'Ver Demo',
+        documentation: 'Documentación'
+      };
+      return labels[type] || 'Ver';
+    }
+  }
+
+  // Initialize when DOM is ready
+  function init() {
+    new ProjectInfoController();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  .project-info {
+    position: fixed;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%) translateX(20px);
+    width: 380px;
+    max-width: calc(100vw - 80px);
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    background: rgba(15, 15, 20, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease,
+      visibility 0.4s ease;
+    z-index: 200;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .project-info.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .project-info__content {
+    padding: 32px;
+  }
+
+  .project-info__header {
+    margin-bottom: 20px;
+  }
+
+  .project-info__year {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-color, #00d4ff);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .project-info__title {
+    margin: 0 0 8px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+
+  .project-info__role {
+    display: block;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+  }
+
+  .project-info__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .project-info__tags :global(.tag) {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--accent-color, #00d4ff);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .project-info__tags :global(.tag:hover) {
+    background: rgba(0, 212, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .project-info__description {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0 0 24px 0;
+  }
+
+  .project-info__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .project-info__links :global(.link) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .project-info__links :global(.link:hover) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .project-info__links :global(.link--github:hover) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .project-info__links :global(.link--live:hover) {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.3);
+  }
+
+  .project-info__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .project-info__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .project-info__close:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+  }
+
+  /* Scrollbar styling */
+  .project-info::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .project-info::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .project-info::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+
+  .project-info::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .project-info {
+      position: fixed;
+      right: 16px;
+      left: 16px;
+      bottom: 16px;
+      top: auto;
+      width: auto;
+      max-width: none;
+      max-height: 60vh;
+      transform: translateY(100%);
+      border-radius: 20px 20px 20px 20px;
+    }
+
+    .project-info.active {
+      transform: translateY(0);
+    }
+
+    .project-info__content {
+      padding: 24px;
+    }
+
+    .project-info__title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
