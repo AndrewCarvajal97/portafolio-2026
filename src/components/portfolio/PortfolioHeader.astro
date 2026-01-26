@@ -3,6 +3,7 @@
  * PortfolioHeader Component
  *
  * Header section displaying personal branding and navigation.
+ * Supports scroll-based navigation between sections.
  */
 
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 }
 
 const {
-  name = 'Tu Nombre',
+  name = 'Andres Carvajal',
   title = 'CTO & Full Stack Developer',
   subtitle = '+3 años de experiencia',
   currentSection = 'projects'
@@ -22,7 +23,9 @@ const {
 
 <header class="portfolio-header">
   <div class="portfolio-header__brand">
-    <h1 class="portfolio-header__name">{name}</h1>
+    <a href="#section-projects" class="portfolio-header__logo" data-nav-link="projects">
+      <h1 class="portfolio-header__name">{name}</h1>
+    </a>
     <div class="portfolio-header__titles">
       <span class="portfolio-header__title">{title}</span>
       <span class="portfolio-header__divider">•</span>
@@ -31,97 +34,65 @@ const {
   </div>
 
   <nav class="portfolio-header__nav">
-    <button
-      type="button"
+    <a
+      href="#section-projects"
       class:list={[
         'portfolio-header__link',
-        { 'portfolio-header__link--active': currentSection === 'about' }
+        { 'active': currentSection === 'projects' }
       ]}
-      data-section="about"
-    >
-      Sobre Mí
-    </button>
-    <button
-      type="button"
-      class:list={[
-        'portfolio-header__link',
-        { 'portfolio-header__link--active': currentSection === 'projects' }
-      ]}
-      data-section="projects"
+      data-nav-link="projects"
     >
       Proyectos
-    </button>
-    <button
-      type="button"
+    </a>
+    <a
+      href="#section-about"
       class:list={[
         'portfolio-header__link',
-        { 'portfolio-header__link--active': currentSection === 'contact' }
+        { 'active': currentSection === 'about' }
       ]}
-      data-section="contact"
+      data-nav-link="about"
+    >
+      Sobre Mí
+    </a>
+    <a
+      href="#section-contact"
+      class:list={[
+        'portfolio-header__link',
+        { 'active': currentSection === 'contact' }
+      ]}
+      data-nav-link="contact"
     >
       Contacto
-    </button>
+    </a>
   </nav>
 </header>
 
 <script>
-  function initNavigation() {
-    const navLinks = document.querySelectorAll('.portfolio-header__link');
-    const allSections = document.querySelectorAll('.section');
-    const projectInfo = document.getElementById('project-info');
-    const controlsHint = document.querySelector('.controls-hint');
+  // Listen for section changes from scroll navigator
+  document.addEventListener('section-changed', ((event: CustomEvent) => {
+    const { section } = event.detail;
 
-    navLinks.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const section = target.dataset.section;
-
-        // Update active state on nav links
-        navLinks.forEach((link) => {
-          link.classList.remove('portfolio-header__link--active');
-        });
-        target.classList.add('portfolio-header__link--active');
-
-        // Hide ALL sections first
-        allSections.forEach((sec) => {
-          sec.classList.remove('section--active');
-        });
-
-        // Show target section
-        const targetSection = document.getElementById(`section-${section}`);
-        if (targetSection) {
-          targetSection.classList.add('section--active');
-        }
-
-        // Hide project info panel when navigating away from projects
-        if (section !== 'projects' && projectInfo) {
-          projectInfo.classList.remove('active');
-          // Also reset carousel view if available
-          if ((window as any).resetCarouselView) {
-            (window as any).resetCarouselView();
-          }
-        }
-
-        // Show/hide controls hint based on section
-        if (controlsHint) {
-          if (section === 'projects') {
-            (controlsHint as HTMLElement).style.display = 'block';
-          } else {
-            (controlsHint as HTMLElement).style.display = 'none';
-          }
-        }
-
-        console.log('Switched to section:', section);
-      });
+    // Update active nav link
+    document.querySelectorAll('[data-nav-link]').forEach(link => {
+      const linkSection = (link as HTMLElement).dataset.navLink;
+      link.classList.toggle('active', linkSection === section);
     });
-  }
+  }) as EventListener);
 
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNavigation);
-  } else {
-    initNavigation();
-  }
+  // Handle project expanded state - hide/show header elements
+  document.addEventListener('project-selected', () => {
+    const header = document.querySelector('.portfolio-header');
+    if (header) {
+      header.classList.add('portfolio-header--project-active');
+    }
+  });
+
+  document.addEventListener('project-deselected', () => {
+    const header = document.querySelector('.portfolio-header');
+    if (header) {
+      header.classList.remove('portfolio-header--project-active');
+    }
+  });
 </script>
 
 <style>
@@ -141,10 +112,21 @@ const {
       rgba(10, 10, 12, 0) 100%
     );
     pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .portfolio-header--project-active {
+    opacity: 0.3;
+    pointer-events: none !important;
   }
 
   .portfolio-header__brand {
     pointer-events: auto;
+  }
+
+  .portfolio-header__logo {
+    text-decoration: none;
+    display: block;
   }
 
   .portfolio-header__name {
@@ -155,6 +137,11 @@ const {
     text-transform: uppercase;
     color: var(--accent-color, #00d4ff);
     line-height: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .portfolio-header__logo:hover .portfolio-header__name {
+    opacity: 0.8;
   }
 
   .portfolio-header__titles {
@@ -188,14 +175,11 @@ const {
 
   .portfolio-header__link {
     position: relative;
-    background: none;
-    border: none;
     color: rgba(255, 255, 255, 0.6);
-    font-family: inherit;
     font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0.02em;
-    cursor: pointer;
+    text-decoration: none;
     padding: 4px 0;
     transition: color 0.2s ease;
   }
@@ -204,11 +188,11 @@ const {
     color: #ffffff;
   }
 
-  .portfolio-header__link--active {
+  .portfolio-header__link.active {
     color: var(--accent-color, #00d4ff);
   }
 
-  .portfolio-header__link--active::after {
+  .portfolio-header__link.active::after {
     content: '';
     position: absolute;
     bottom: -4px;
@@ -217,32 +201,65 @@ const {
     height: 2px;
     background: var(--accent-color, #00d4ff);
     border-radius: 1px;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
   }
 
   @media (max-width: 768px) {
     .portfolio-header {
-      padding: 16px 20px;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
+      padding: 12px 16px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: linear-gradient(
+        to bottom,
+        rgba(10, 10, 12, 0.98) 0%,
+        rgba(10, 10, 12, 0.9) 80%,
+        rgba(10, 10, 12, 0) 100%
+      );
     }
 
     .portfolio-header__titles {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
-
-    .portfolio-header__divider {
       display: none;
     }
 
+    .portfolio-header__name {
+      font-size: 1rem;
+    }
+
     .portfolio-header__nav {
-      gap: 20px;
+      gap: 16px;
     }
 
     .portfolio-header__link {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .portfolio-header {
+      padding: 10px 12px;
+    }
+
+    .portfolio-header__name {
+      font-size: 0.9rem;
+    }
+
+    .portfolio-header__nav {
+      gap: 12px;
+    }
+
+    .portfolio-header__link {
+      font-size: 0.7rem;
     }
   }
 </style>

@@ -12,7 +12,7 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<div class:list={['controls-hint', className]}>
+<div id="controls-hint" class:list={['controls-hint', className]}>
   <div class="controls-hint__items">
     <span class="controls-hint__item">
       <kbd class="controls-hint__key">Arrastra</kbd>
@@ -31,6 +31,23 @@ const { class: className = '' } = Astro.props;
   </div>
 </div>
 
+<script>
+  // Hide controls hint when project is selected
+  document.addEventListener('project-selected', () => {
+    const hint = document.getElementById('controls-hint');
+    if (hint) {
+      hint.classList.add('controls-hint--hidden');
+    }
+  });
+
+  document.addEventListener('project-deselected', () => {
+    const hint = document.getElementById('controls-hint');
+    if (hint) {
+      hint.classList.remove('controls-hint--hidden');
+    }
+  });
+</script>
+
 <style>
   .controls-hint {
     position: fixed;
@@ -38,6 +55,13 @@ const { class: className = '' } = Astro.props;
     left: 50%;
     transform: translateX(-50%);
     z-index: 40;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .controls-hint--hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
     pointer-events: none;
   }
 

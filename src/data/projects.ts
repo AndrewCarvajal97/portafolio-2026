@@ -9,20 +9,20 @@ import type { Project } from '../types/project';
 
 export const projects: Project[] = [
   {
-    id: 'ecommerce-platform',
-    title: 'E-Commerce Platform',
-    description: 'Plataforma de comercio electr\u00f3nico escalable con arquitectura de microservicios.',
-    longDescription: 'Sistema completo de e-commerce construido con arquitectura de microservicios, incluyendo gesti\u00f3n de inventario en tiempo real, procesamiento de pagos, y panel de administraci\u00f3n.',
-    tags: ['React', 'Node.js', 'PostgreSQL', 'Docker', 'AWS'],
+    id: 'aia-landing',
+    title: 'AIA Landing Page',
+    description: 'Landing page moderna para plataforma de inteligencia artificial.',
+    longDescription: 'Diseño y desarrollo de landing page para una plataforma de IA, con animaciones fluidas, diseño responsivo y optimización de rendimiento.',
+    tags: ['React', 'TypeScript', 'TailwindCSS', 'Framer Motion'],
     color: 0x00d4ff,
-    image: 'https://picsum.photos/seed/ecommerce/600/400',
+    image: '/AIA-Landing.png',
     links: [
-      { type: 'github', url: 'https://github.com/username/ecommerce' },
-      { type: 'live', url: 'https://ecommerce-demo.com' }
+      { type: 'github', url: 'https://github.com/cosmopablocarvajal/aia-landing' },
+      { type: 'live', url: 'https://aia-landing.com' }
     ],
     featured: true,
     year: 2024,
-    role: 'Lead Developer & Architect'
+    role: 'Full Stack Developer'
   },
   {
     id: 'fintech-dashboard',

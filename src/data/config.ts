@@ -7,6 +7,49 @@
 
 import type { CarouselConfig, CameraConfig, LightConfig } from '../types/carousel';
 
+/**
+ * Get responsive carousel configuration based on screen width
+ */
+export function getResponsiveCarouselConfig(): CarouselConfig {
+  const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+  const isSmallMobile = width < 480;
+  const isMobile = width < 768;
+
+  if (isSmallMobile) {
+    return {
+      radius: 4,
+      cardWidth: 2.2,
+      cardHeight: 1.4,
+      autoRotateSpeed: 0.0015,
+      dragSensitivity: 0.008,
+      dampingFactor: 0.05,
+      focusDistance: 1,
+      fogNear: 3,
+      fogFar: 15,
+      backgroundColor: 0x0a0a0c,
+      accentColor: 0x00d4ff
+    };
+  }
+
+  if (isMobile) {
+    return {
+      radius: 4.5,
+      cardWidth: 2.8,
+      cardHeight: 1.75,
+      autoRotateSpeed: 0.0012,
+      dragSensitivity: 0.007,
+      dampingFactor: 0.05,
+      focusDistance: 1.2,
+      fogNear: 4,
+      fogFar: 18,
+      backgroundColor: 0x0a0a0c,
+      accentColor: 0x00d4ff
+    };
+  }
+
+  return CAROUSEL_CONFIG;
+}
+
 export const CAROUSEL_CONFIG: CarouselConfig = {
   // Carousel geometry
   radius: 6,
@@ -32,18 +75,47 @@ export const CAMERA_CONFIG: CameraConfig = {
   fov: 75,
   near: 0.1,
   far: 1000,
-  position: { x: 0, y: 1, z: 12 }
+  position: { x: 0, y: -0.2, z: 12 }
 };
+
+/**
+ * Get responsive camera configuration based on screen width
+ */
+export function getResponsiveCameraConfig(): CameraConfig {
+  const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+  const isSmallMobile = width < 480;
+  const isMobile = width < 768;
+
+  if (isSmallMobile) {
+    return {
+      fov: 75,
+      near: 0.1,
+      far: 1000,
+      position: { x: 0, y: -0.5, z: 9 }
+    };
+  }
+
+  if (isMobile) {
+    return {
+      fov: 75,
+      near: 0.1,
+      far: 1000,
+      position: { x: 0, y: -0.3, z: 10 }
+    };
+  }
+
+  return CAMERA_CONFIG;
+}
 
 export const LIGHT_CONFIG: LightConfig = {
   ambient: {
     color: 0xffffff,
-    intensity: 0.5
+    intensity: 1.2
   },
   point: {
-    color: 0x00d4ff,
-    intensity: 1,
-    position: { x: 5, y: 5, z: 5 }
+    color: 0xffffff,
+    intensity: 0.8,
+    position: { x: 0, y: 3, z: 10 }
   }
 };
 

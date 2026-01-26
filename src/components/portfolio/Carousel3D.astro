@@ -144,11 +144,20 @@ const { class: className = '' } = Astro.props;
     height: 100%;
     overflow: hidden;
     background: transparent;
+    transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
   }
 
   .carousel-container :global(canvas) {
     display: block;
     width: 100% !important;
     height: 100% !important;
+  }
+
+  /* Blur and fade effect when project is selected */
+  .carousel-container.blurred {
+    filter: blur(20px) brightness(0.3);
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
   }
 </style>

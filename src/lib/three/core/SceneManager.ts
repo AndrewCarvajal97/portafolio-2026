@@ -7,7 +7,7 @@
 
 import * as THREE from 'three';
 import { update as tweenUpdate } from '@tweenjs/tween.js';
-import { CAMERA_CONFIG, CAROUSEL_CONFIG, LIGHT_CONFIG } from '../../../data/config';
+import { CAMERA_CONFIG, CAROUSEL_CONFIG, LIGHT_CONFIG, getResponsiveCameraConfig } from '../../../data/config';
 import type { SceneElements } from '../../../types/carousel';
 
 export class SceneManager {
@@ -124,7 +124,7 @@ export class SceneManager {
   }
 
   /**
-   * Handle window resize
+   * Handle window resize - adjusts camera for mobile
    */
   private handleResize = (): void => {
     if (!this.container) return;
@@ -133,6 +133,17 @@ export class SceneManager {
     const height = this.container.clientHeight;
 
     this.camera.aspect = width / height;
+
+    // Get responsive camera config
+    const responsiveConfig = getResponsiveCameraConfig();
+
+    this.camera.position.set(
+      responsiveConfig.position.x,
+      responsiveConfig.position.y,
+      responsiveConfig.position.z
+    );
+    this.camera.fov = responsiveConfig.fov;
+
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   };

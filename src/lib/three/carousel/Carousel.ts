@@ -9,9 +9,9 @@ import * as THREE from 'three';
 import { Tween, Easing } from '@tweenjs/tween.js';
 import { ProjectCard } from './ProjectCard';
 import { SceneManager } from '../core/SceneManager';
-import { CAROUSEL_CONFIG, ANIMATION_DURATION, CAMERA_CONFIG } from '../../../data/config';
+import { getResponsiveCarouselConfig, getResponsiveCameraConfig, ANIMATION_DURATION } from '../../../data/config';
 import type { Project } from '../../../types/project';
-import type { CarouselState, CarouselEvent, CarouselEventHandler } from '../../../types/carousel';
+import type { CarouselState, CarouselEvent, CarouselEventHandler, CarouselConfig, CameraConfig } from '../../../types/carousel';
 
 export class Carousel {
   private group: THREE.Group;
@@ -23,12 +23,16 @@ export class Carousel {
   private mouse: THREE.Vector2;
   private activeTweens: Tween<any>[] = [];
   private renderUnsubscribe: (() => void) | null = null;
+  private config: CarouselConfig;
+  private cameraConfig: CameraConfig;
 
   constructor(projects: Project[]) {
     this.sceneManager = SceneManager.getInstance();
     this.group = new THREE.Group();
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
+    this.config = getResponsiveCarouselConfig();
+    this.cameraConfig = getResponsiveCameraConfig();
 
     this.state = {
       isDragging: false,
@@ -72,13 +76,13 @@ export class Carousel {
       // Apply damping to rotation
       this.state.currentRotation +=
         (this.state.targetRotation - this.state.currentRotation) *
-        CAROUSEL_CONFIG.dampingFactor;
+        this.config.dampingFactor;
 
       this.group.rotation.y = this.state.currentRotation;
 
       // Auto-rotate when not dragging
       if (!this.state.isDragging) {
-        this.state.targetRotation += CAROUSEL_CONFIG.autoRotateSpeed;
+        this.state.targetRotation += this.config.autoRotateSpeed;
       }
     }
   };
@@ -105,7 +109,7 @@ export class Carousel {
         this.state.isDragging = true;
         this.emit({ type: 'rotationStart' });
       }
-      this.state.targetRotation += deltaX * CAROUSEL_CONFIG.dragSensitivity;
+      this.state.targetRotation += deltaX * this.config.dragSensitivity;
     }
     this.state.previousMouseX = clientX;
   }
@@ -182,7 +186,7 @@ export class Carousel {
   }
 
   /**
-   * Handle mouse move for hover effects
+   * Handle mouse move for hover effects and 3D tilt
    */
   onMouseMove(clientX: number, clientY: number, width: number, height: number): void {
     if (this.state.activeProject) return;
@@ -193,10 +197,9 @@ export class Carousel {
     this.raycaster.setFromCamera(this.mouse, this.sceneManager.getCamera());
     const intersects = this.raycaster.intersectObjects(this.group.children, true);
 
-    // Reset all hover states
-    this.cards.forEach(card => card.setHovered(false));
+    // Find currently hovered card
+    let newHoveredCard: typeof this.cards[0] | null = null;
 
-    // Set hover on intersected card
     if (intersects.length > 0) {
       // Find the parent card mesh
       let targetObject = intersects[0].object;
@@ -204,11 +207,29 @@ export class Carousel {
         targetObject = targetObject.parent as THREE.Mesh;
       }
 
-      const hoveredCard = this.cards.find(
-        card => card.getMesh() === targetObject
-      );
-      if (hoveredCard) {
-        hoveredCard.setHovered(true);
+      newHoveredCard = this.cards.find(card => card.getMesh() === targetObject) || null;
+    }
+
+    // Only update hover states if the hovered card changed
+    this.cards.forEach(card => {
+      const shouldBeHovered = card === newHoveredCard;
+      const isCurrentlyHovered = card.getIsHovered();
+
+      if (shouldBeHovered !== isCurrentlyHovered) {
+        card.setHovered(shouldBeHovered);
+        if (!shouldBeHovered) {
+          card.resetTilt();
+        }
+      }
+    });
+
+    // Apply tilt effect to hovered card
+    if (newHoveredCard && intersects.length > 0) {
+      const intersect = intersects[0];
+      if (intersect.uv) {
+        const normalizedX = (intersect.uv.x - 0.5) * 2;
+        const normalizedY = (intersect.uv.y - 0.5) * 2;
+        newHoveredCard.applyTilt(normalizedX, normalizedY);
       }
     }
   }
@@ -326,13 +347,16 @@ export class Carousel {
     const camera = this.sceneManager.getCamera();
     const centerTarget = new THREE.Vector3(0, 0, 0);
 
+    // Get responsive camera position for reset
+    const responsiveCameraConfig = getResponsiveCameraConfig();
+
     // Animate camera back to original position
     const cameraTween = new Tween(camera.position)
       .to(
         {
-          x: CAMERA_CONFIG.position.x,
-          y: CAMERA_CONFIG.position.y,
-          z: CAMERA_CONFIG.position.z
+          x: responsiveCameraConfig.position.x,
+          y: responsiveCameraConfig.position.y,
+          z: responsiveCameraConfig.position.z
         },
         ANIMATION_DURATION.cameraReset
       )

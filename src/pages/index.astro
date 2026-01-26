@@ -4,11 +4,12 @@
  *
  * Main landing page featuring the 3D project carousel.
  * Showcases professional work as a CTO & Full Stack Developer.
+ * Supports both navbar navigation and scroll navigation.
  */
 
 import Layout from '../layouts/Layout.astro';
 import Carousel3D from '../components/portfolio/Carousel3D.astro';
-import ProjectInfo from '../components/portfolio/ProjectInfo.astro';
+import ProjectExpanded from '../components/portfolio/ProjectExpanded.astro';
 import PortfolioHeader from '../components/portfolio/PortfolioHeader.astro';
 import ControlsHint from '../components/portfolio/ControlsHint.astro';
 import AboutSection from '../components/portfolio/AboutSection.astro';
@@ -17,38 +18,50 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
 ---
 
 <Layout>
-  <main class="portfolio">
-    <!-- Header with personal branding -->
+  <main class="portfolio" id="portfolio-main">
+    <!-- Header with personal branding (fixed) -->
     <PortfolioHeader
-      name="Tu Nombre"
+      name="Andres Carvajal"
       title="CTO & Full Stack Developer"
       subtitle="+3 años de experiencia"
       currentSection="projects"
     />
 
-    <!-- About Section -->
-    <AboutSection />
+    <!-- Scrollable sections container -->
+    <div class="portfolio__scroll-container" id="scroll-container">
+      <!-- Section 1: Projects (3D Carousel) -->
+      <section id="section-projects" class="portfolio__section portfolio__section--projects">
+        <Carousel3D />
+        <SectionTitle
+          title="Proyectos"
+          subtitle="Explora mi trabajo - haz clic en una tarjeta para ver detalles"
+          section="projects"
+        />
+        
 
-    <!-- Contact Section -->
-    <ContactSection />
+        <!-- Scroll indicator (mouse icon) -->
+        <div class="scroll-indicator" id="scroll-indicator">
+          <div class="scroll-indicator__mouse">
+            <div class="scroll-indicator__wheel"></div>
+          </div>
+        </div>
+      </section>
 
-    <!-- 3D Project Carousel (default visible) -->
-    <section id="section-projects" class="section section--active portfolio__canvas">
-      <Carousel3D />
-      <!-- Section title -->
-      <SectionTitle
-        title="Proyectos"
-        subtitle="Explora mi trabajo - haz clic en una tarjeta para ver detalles"
-        section="projects"
-      />
-      <!-- Controls hint (only visible in projects section) -->
-      <ControlsHint />
-    </section>
+      <!-- Section 2: About -->
+      <section id="section-about" class="portfolio__section portfolio__section--about">
+        <AboutSection />
+      </section>
 
-    <!-- Project Details Panel -->
-    <ProjectInfo />
+      <!-- Section 3: Contact -->
+      <section id="section-contact" class="portfolio__section portfolio__section--contact">
+        <ContactSection />
+      </section>
+    </div>
 
-    <!-- Background gradient effects -->
+    <!-- Project Expanded View (full-screen overlay) -->
+    <ProjectExpanded />
+
+    <!-- Background gradient effects (fixed) -->
     <div class="portfolio__background">
       <div class="portfolio__gradient portfolio__gradient--primary"></div>
       <div class="portfolio__gradient portfolio__gradient--secondary"></div>
@@ -56,35 +69,255 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
   </main>
 </Layout>
 
+<script>
+  // Scroll-based section detection and navigation
+  class ScrollNavigator {
+    private scrollContainer: HTMLElement | null;
+    private sections: HTMLElement[] = [];
+    private header: HTMLElement | null;
+    private currentSection = 'projects';
+    private isProjectExpanded = false;
+    private scrollIndicator: HTMLElement | null;
+
+    constructor() {
+      this.scrollContainer = document.getElementById('scroll-container');
+      this.header = document.querySelector('.portfolio-header');
+      this.scrollIndicator = document.getElementById('scroll-indicator');
+
+      if (!this.scrollContainer) return;
+
+      this.sections = Array.from(this.scrollContainer.querySelectorAll('.portfolio__section'));
+      this.setupScrollListener();
+      this.setupNavLinks();
+      this.setupProjectExpandedListener();
+      this.updateActiveSection();
+    }
+
+    private setupScrollListener(): void {
+      if (!this.scrollContainer) return;
+
+      let ticking = false;
+      this.scrollContainer.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            this.updateActiveSection();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    }
+
+    private setupNavLinks(): void {
+      // Listen for nav link clicks to smooth scroll
+      document.querySelectorAll('[data-nav-link]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = (link as HTMLElement).dataset.navLink;
+          const targetSection = document.getElementById(`section-${targetId}`);
+
+          if (targetSection && this.scrollContainer) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    }
+
+    private setupProjectExpandedListener(): void {
+      // Disable scroll when project is expanded
+      document.addEventListener('project-selected', () => {
+        this.isProjectExpanded = true;
+        if (this.scrollContainer) {
+          this.scrollContainer.style.overflowY = 'hidden';
+          this.scrollContainer.style.touchAction = 'none';
+        }
+      });
+
+      document.addEventListener('project-deselected', () => {
+        this.isProjectExpanded = false;
+        if (this.scrollContainer) {
+          // Small delay to prevent scroll snap from interfering
+          setTimeout(() => {
+            this.scrollContainer!.style.overflowY = 'auto';
+            this.scrollContainer!.style.touchAction = 'auto';
+          }, 100);
+        }
+      });
+    }
+
+    private updateActiveSection(): void {
+      if (!this.scrollContainer || this.isProjectExpanded) return;
+
+      const scrollTop = this.scrollContainer.scrollTop;
+      const viewportHeight = this.scrollContainer.clientHeight;
+
+      // Find which section is most visible
+      let maxVisibility = 0;
+      let activeSection = 'projects';
+
+      this.sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        const containerRect = this.scrollContainer!.getBoundingClientRect();
+
+        const visibleTop = Math.max(rect.top, containerRect.top);
+        const visibleBottom = Math.min(rect.bottom, containerRect.bottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+
+        if (visibleHeight > maxVisibility) {
+          maxVisibility = visibleHeight;
+          activeSection = section.id.replace('section-', '');
+        }
+      });
+
+      if (activeSection !== this.currentSection) {
+        this.currentSection = activeSection;
+        this.updateHeaderNav(activeSection);
+        this.updateScrollIndicator(activeSection);
+      }
+    }
+
+    private updateHeaderNav(section: string): void {
+      // Update active nav link
+      document.querySelectorAll('[data-nav-link]').forEach(link => {
+        const linkSection = (link as HTMLElement).dataset.navLink;
+        link.classList.toggle('active', linkSection === section);
+      });
+
+      // Dispatch event for other components
+      document.dispatchEvent(new CustomEvent('section-changed', {
+        detail: { section }
+      }));
+    }
+
+    private updateScrollIndicator(section: string): void {
+      if (this.scrollIndicator) {
+        // Hide scroll indicator when not on first section
+        this.scrollIndicator.classList.toggle('hidden', section !== 'projects');
+      }
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ScrollNavigator());
+  } else {
+    new ScrollNavigator();
+  }
+</script>
+
 <style>
   .portfolio {
     position: relative;
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    background: var(--background-primary, #0a0a0c);
   }
 
-  .section {
-    display: none;
-  }
-
-  .section--active {
-    display: flex;
-  }
-
-  .portfolio__canvas {
-    position: absolute;
-    inset: 0;
+  /* Scrollable container */
+  .portfolio__scroll-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
     z-index: 1;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .portfolio__canvas.section--active {
-    display: block;
+  /* Hide scrollbar but keep functionality */
+  .portfolio__scroll-container::-webkit-scrollbar {
+    width: 6px;
   }
 
-  /* Background Effects */
-  .portfolio__background {
+  .portfolio__scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .portfolio__scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  .portfolio__scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Section base styles */
+  .portfolio__section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    scroll-snap-align: start;
+  }
+
+  /* Projects section - full viewport with carousel */
+  .portfolio__section--projects {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* About section - auto height based on content */
+  .portfolio__section--about {
+    min-height: auto;
+  }
+
+  /* Contact section - auto height based on content */
+  .portfolio__section--contact {
+    min-height: auto;
+  }
+
+  /* Scroll indicator - mouse icon */
+  .scroll-indicator {
     position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+
+  .scroll-indicator.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+
+  .scroll-indicator__mouse {
+    width: 26px;
+    height: 42px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 13px;
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+  }
+
+  .scroll-indicator__wheel {
+    width: 4px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    animation: scrollWheel 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollWheel {
+    0%, 100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 0.3;
+      transform: translateY(10px);
+    }
+  }
+
+  /* Background Effects (fixed position) */
+  .portfolio__background {
+    position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
@@ -117,8 +350,7 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
   }
 
   @keyframes pulse {
-    0%,
-    100% {
+    0%, 100% {
       transform: scale(1);
       opacity: 0.15;
     }
@@ -132,6 +364,21 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
   @media (prefers-reduced-motion: reduce) {
     .portfolio__gradient {
       animation: none;
+    }
+
+    .portfolio__scroll-container {
+      scroll-behavior: auto;
+    }
+
+    .scroll-indicator__wheel {
+      animation: none;
+    }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .scroll-indicator {
+      bottom: 100px;
     }
   }
 </style>
