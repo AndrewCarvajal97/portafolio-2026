@@ -11,5 +11,6 @@ export const PORTFOLIO_COMPONENTS = {
   Carousel3D: './Carousel3D.astro',
   ProjectInfo: './ProjectInfo.astro',
   PortfolioHeader: './PortfolioHeader.astro',
-  ControlsHint: './ControlsHint.astro'
+  ControlsHint: './ControlsHint.astro',
+  EducationSection: './EducationSection.astro'
 } as const;

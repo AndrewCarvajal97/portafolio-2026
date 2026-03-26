@@ -1,0 +1,1201 @@
+---
+/**
+ * EducationSection Component
+ *
+ * Interactive education and certifications section with GSAP animations.
+ * Features animated timeline, 3D certificate cards, and scroll-triggered effects.
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const education = [
+  {
+    id: 'sena-tech',
+    institution: 'SENA',
+    degree: 'Tecnólogo en Análisis y Desarrollo de Software',
+    period: 'Jul 2022 - Nov 2024',
+    location: 'Bucaramanga, Santander',
+    description: 'Formación integral en desarrollo de software, incluyendo análisis de requerimientos, diseño de arquitectura, programación multi-lenguaje, bases de datos y metodologías ágiles.',
+    icon: 'code',
+    color: '#00d4ff'
+  },
+  {
+    id: 'oracle-one',
+    institution: 'Oracle Next Education',
+    degree: 'ONE F2 T6 Back-end',
+    period: 'Ago 2023 - Jul 2024',
+    location: 'Virtual',
+    description: 'Programa intensivo de desarrollo back-end con Java, Spring Boot, REST APIs, bases de datos y mejores prácticas de programación. En colaboración con Alura Latam.',
+    icon: 'database',
+    color: '#ff6b35'
+  },
+  {
+    id: 'sena-maintenance',
+    institution: 'SENA',
+    degree: 'Técnico en Mantenimiento de Equipos de Cómputo',
+    period: 'Feb 2012 - Nov 2013',
+    location: 'Bucaramanga, Santander',
+    description: 'Formación técnica en diagnóstico de hardware, mantenimiento preventivo y correctivo, instalación de sistemas operativos y configuración básica de redes.',
+    icon: 'cpu',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'highschool',
+    institution: 'Colegio Técnico Vicente Azuero',
+    degree: 'Bachiller Técnico',
+    period: '2007 - 2013',
+    location: 'Floridablanca, Santander',
+    description: 'Educación secundaria con énfasis técnico, desarrollando fundamentos en lógica, matemáticas y habilidades prácticas.',
+    icon: 'graduation',
+    color: '#10b981'
+  }
+];
+
+const certifications = [
+  {
+    id: 'powerbi',
+    name: 'Data Visualization using Power BI',
+    issuer: 'SENA',
+    date: 'Sep 2024',
+    icon: 'chart',
+    color: '#f59e0b'
+  },
+  {
+    id: 'entrepreneurship',
+    name: 'Digital Entrepreneurship',
+    issuer: 'SENA',
+    date: 'Mar 2024',
+    icon: 'rocket',
+    color: '#ec4899'
+  },
+  {
+    id: 'aws-cloud',
+    name: 'AWS Cloud 101',
+    issuer: 'AWS Educate',
+    date: 'Oct 2023',
+    icon: 'cloud',
+    color: '#ff9900'
+  },
+  {
+    id: 'cybersec-intro',
+    name: 'Introduction to Cybersecurity',
+    issuer: 'Cisco',
+    date: 'Nov 2023',
+    icon: 'shield',
+    color: '#06b6d4'
+  },
+  {
+    id: 'data-science',
+    name: 'Introduction to Data Science',
+    issuer: 'Cisco',
+    date: 'Nov 2023',
+    icon: 'brain',
+    color: '#8b5cf6'
+  },
+  {
+    id: 'cybersec-fundamentals',
+    name: 'Cybersecurity Fundamentals',
+    issuer: 'Cisco',
+    date: 'Mar 2023',
+    icon: 'lock',
+    color: '#14b8a6'
+  },
+  {
+    id: 'cybersec-tech',
+    name: 'Applied Cybersecurity Technologies',
+    issuer: 'SENA',
+    date: 'Mar 2023',
+    icon: 'terminal',
+    color: '#f43f5e'
+  },
+  {
+    id: 'cybersec-bootcamp',
+    name: 'Cybersecurity Bootcamp',
+    issuer: 'SENA',
+    date: 'Dec 2022',
+    icon: 'hack',
+    color: '#6366f1'
+  },
+  {
+    id: 'software-bootcamp',
+    name: 'Software Development Bootcamp',
+    issuer: 'SOFTIC',
+    date: 'Dec 2023',
+    icon: 'code-bracket',
+    color: '#22c55e'
+  }
+];
+---
+
+<section class:list={['education-section', className]} id="education-content">
+  <div class="education-section__container">
+    <!-- Section Header -->
+    <div class="education-section__header">
+      <div class="education-section__badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+        <span>Aprendizaje Continuo</span>
+      </div>
+      <h2 class="education-section__title">
+        <span class="education-section__title-accent">Formación</span> Académica
+      </h2>
+      <p class="education-section__subtitle">
+        Mi trayectoria de crecimiento profesional y técnico en el mundo de la tecnología
+      </p>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="education-tabs">
+      <button class="education-tab active" data-tab="education">
+        <svg class="education-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+        <span>Educación</span>
+      </button>
+      <button class="education-tab" data-tab="certifications">
+        <svg class="education-tab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="16" rx="2"/>
+          <path d="M7 8h10M7 12h6"/>
+          <circle cx="16" cy="16" r="2"/>
+        </svg>
+        <span>Certificaciones</span>
+        <span class="education-tab__count">{certifications.length}</span>
+      </button>
+    </div>
+
+    <!-- Education Timeline -->
+    <div class="education-content education-content--education active" data-content="education">
+      <div class="timeline">
+        <div class="timeline__line"></div>
+        <div class="timeline__progress"></div>
+        
+        {education.map((edu, index) => (
+          <div class="timeline__item" data-index={index} style={`--item-color: ${edu.color}`}>
+            <div class="timeline__marker">
+              <div class="timeline__marker-dot"></div>
+              <div class="timeline__marker-pulse"></div>
+            </div>
+            
+            <div class="timeline__card">
+              <div class="timeline__card-header">
+                <div class="timeline__icon">
+                  {edu.icon === 'code' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="16 18 22 12 16 6"/>
+                      <polyline points="8 6 2 12 8 18"/>
+                    </svg>
+                  )}
+                  {edu.icon === 'database' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                    </svg>
+                  )}
+                  {edu.icon === 'cpu' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="4" y="4" width="16" height="16" rx="2"/>
+                      <rect x="9" y="9" width="6" height="6"/>
+                      <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>
+                    </svg>
+                  )}
+                  {edu.icon === 'graduation' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                  )}
+                </div>
+                <div class="timeline__meta">
+                  <span class="timeline__period">{edu.period}</span>
+                  <span class="timeline__location">{edu.location}</span>
+                </div>
+              </div>
+              
+              <h3 class="timeline__degree">{edu.degree}</h3>
+              <h4 class="timeline__institution">{edu.institution}</h4>
+              <p class="timeline__description">{edu.description}</p>
+              
+              <div class="timeline__card-glow"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Certifications Grid -->
+    <div class="education-content education-content--certifications" data-content="certifications">
+      <div class="certifications-grid">
+        {certifications.map((cert, index) => (
+          <div class="cert-card" data-index={index} style={`--cert-color: ${cert.color}`}>
+            <div class="cert-card__inner">
+              <div class="cert-card__front">
+                <div class="cert-card__icon">
+                  {cert.icon === 'chart' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 20V10M12 20V4M6 20v-6"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'rocket' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                      <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'cloud' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'shield' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'brain' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.54"/>
+                      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.54"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'lock' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'terminal' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="4 17 10 11 4 5"/>
+                      <line x1="12" y1="19" x2="20" y2="19"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'hack' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                      <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                  )}
+                  {cert.icon === 'code-bracket' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="16 18 22 12 16 6"/>
+                      <polyline points="8 6 2 12 8 18"/>
+                    </svg>
+                  )}
+                </div>
+                <h3 class="cert-card__name">{cert.name}</h3>
+                <div class="cert-card__meta">
+                  <span class="cert-card__issuer">{cert.issuer}</span>
+                  <span class="cert-card__date">{cert.date}</span>
+                </div>
+                <div class="cert-card__shine"></div>
+              </div>
+            </div>
+            <div class="cert-card__particles">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Background Effects -->
+  <div class="education-section__bg">
+    <div class="floating-shapes">
+      <div class="shape shape--1"></div>
+      <div class="shape shape--2"></div>
+      <div class="shape shape--3"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  class EducationAnimations {
+    private section: HTMLElement | null;
+    private tabs: NodeListOf<Element>;
+    private contents: NodeListOf<Element>;
+    private scroller: HTMLElement | null;
+
+    constructor() {
+      this.section = document.getElementById('education-content');
+      this.tabs = document.querySelectorAll('.education-tab');
+      this.contents = document.querySelectorAll('.education-content');
+      this.scroller = document.getElementById('scroll-container');
+
+      if (!this.section) return;
+
+      this.init();
+    }
+
+    private init(): void {
+      // Configure ScrollTrigger to use the custom scroll container
+      if (this.scroller) {
+        ScrollTrigger.scrollerProxy(this.scroller, {
+          scrollTop(value: number | undefined) {
+            if (arguments.length && value !== undefined) {
+              (document.getElementById('scroll-container') as HTMLElement).scrollTop = value;
+            }
+            return document.getElementById('scroll-container')?.scrollTop || 0;
+          },
+          getBoundingClientRect() {
+            return {
+              top: 0,
+              left: 0,
+              width: window.innerWidth,
+              height: window.innerHeight
+            };
+          }
+        });
+
+        this.scroller.addEventListener('scroll', () => {
+          ScrollTrigger.update();
+        });
+      }
+
+      this.setupTabs();
+      this.animateOnView();
+      this.setupHoverEffects();
+      this.animateFloatingShapes();
+    }
+
+    private setupTabs(): void {
+      this.tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetTab = tab.getAttribute('data-tab');
+          
+          // Update active tab
+          this.tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          // Switch content with animation
+          this.contents.forEach(content => {
+            const contentType = content.getAttribute('data-content');
+            if (contentType === targetTab) {
+              gsap.set(content, { display: 'block' });
+              gsap.fromTo(content, 
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+              );
+              content.classList.add('active');
+              
+              // Re-trigger animations for the new content
+              if (targetTab === 'certifications') {
+                this.animateCertificationsOnSwitch();
+              }
+            } else {
+              content.classList.remove('active');
+              gsap.set(content, { display: 'none' });
+            }
+          });
+        });
+      });
+    }
+
+    private animateOnView(): void {
+      // Animate header and tabs immediately
+      const header = this.section?.querySelector('.education-section__header');
+      const tabsEl = this.section?.querySelector('.education-tabs');
+      
+      if (header && tabsEl) {
+        gsap.fromTo([header, tabsEl],
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out', delay: 0.1 }
+        );
+      }
+
+      // Animate timeline items with stagger
+      const timelineItems = this.section?.querySelectorAll('.timeline__item');
+      const timelineProgress = this.section?.querySelector('.timeline__progress') as HTMLElement;
+      
+      if (timelineItems && timelineItems.length > 0) {
+        // Animate all cards with stagger
+        const cards = Array.from(timelineItems).map(item => item.querySelector('.timeline__card'));
+        const markers = Array.from(timelineItems).map(item => item.querySelector('.timeline__marker'));
+        
+        gsap.fromTo(markers.filter(Boolean),
+          { scale: 0, opacity: 0 },
+          { 
+            scale: 1, 
+            opacity: 1, 
+            duration: 0.4, 
+            stagger: 0.15,
+            ease: 'back.out(1.7)',
+            delay: 0.3
+          }
+        );
+        
+        gsap.fromTo(cards.filter(Boolean),
+          { opacity: 0, x: -20 },
+          { 
+            opacity: 1, 
+            x: 0, 
+            duration: 0.5, 
+            stagger: 0.12,
+            ease: 'power2.out',
+            delay: 0.4
+          }
+        );
+      }
+
+      // Animate timeline progress based on scroll
+      if (timelineProgress && this.scroller) {
+        this.scroller.addEventListener('scroll', () => {
+          const timeline = this.section?.querySelector('.timeline');
+          if (!timeline) return;
+          
+          const rect = timeline.getBoundingClientRect();
+          const viewHeight = window.innerHeight;
+          const progress = Math.max(0, Math.min(1, 
+            (viewHeight - rect.top) / (rect.height + viewHeight * 0.3)
+          ));
+          
+          gsap.set(timelineProgress, { scaleY: progress });
+        });
+      }
+
+      // Certifications are hidden by default, animate on tab switch
+    }
+
+    private animateCertificationsOnSwitch(): void {
+      const certCards = this.section?.querySelectorAll('.cert-card');
+      if (!certCards) return;
+
+      gsap.fromTo(certCards,
+        { 
+          opacity: 0, 
+          scale: 0.8,
+          y: 20
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: 'back.out(1.4)'
+        }
+      );
+    }
+
+    private setupHoverEffects(): void {
+      // Timeline card hover
+      const timelineCards = this.section?.querySelectorAll('.timeline__card');
+      timelineCards?.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, {
+            scale: 1.02,
+            boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        });
+
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            scale: 1,
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        });
+      });
+
+      // Certification card hover
+      const certCards = this.section?.querySelectorAll('.cert-card');
+      certCards?.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, {
+            y: -10,
+            scale: 1.05,
+            duration: 0.4,
+            ease: 'power2.out'
+          });
+          
+          // Animate particles
+          const particles = card.querySelectorAll('.cert-card__particles span');
+          gsap.to(particles, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.3,
+            stagger: 0.1
+          });
+        });
+
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            y: 0,
+            scale: 1,
+            duration: 0.4,
+            ease: 'power2.out'
+          });
+          
+          const particles = card.querySelectorAll('.cert-card__particles span');
+          gsap.to(particles, {
+            opacity: 0,
+            scale: 0,
+            duration: 0.2
+          });
+        });
+      });
+    }
+
+    private animateFloatingShapes(): void {
+      const shapes = this.section?.querySelectorAll('.shape');
+      if (!shapes) return;
+
+      shapes.forEach((shape, index) => {
+        gsap.to(shape, {
+          y: `random(-30, 30)`,
+          x: `random(-20, 20)`,
+          rotation: `random(-15, 15)`,
+          duration: `random(4, 6)`,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: index * 0.5
+        });
+      });
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new EducationAnimations();
+  });
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    new EducationAnimations();
+  });
+</script>
+
+<style>
+  .education-section {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 100px 24px 80px;
+    min-height: 100vh;
+    z-index: 2;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .education-section__container {
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header */
+  .education-section__header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .education-section__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 30px;
+    color: var(--accent-color, #00d4ff);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .education-section__badge svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .education-section__title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .education-section__title-accent {
+    background: linear-gradient(135deg, var(--accent-color, #00d4ff) 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .education-section__subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    max-width: 500px;
+  }
+
+  /* Tabs */
+  .education-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .education-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .education-tab::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.2));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
+  }
+
+  .education-tab:hover::before {
+    opacity: 0.5;
+  }
+
+  .education-tab.active {
+    color: white;
+    background: rgba(0, 212, 255, 0.15);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+  }
+
+  .education-tab.active::before {
+    opacity: 1;
+  }
+
+  .education-tab__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .education-tab__count {
+    background: rgba(0, 212, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* Content Areas */
+  .education-content {
+    display: none;
+  }
+
+  .education-content.active {
+    display: block;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 48px;
+  }
+
+  .timeline__line {
+    display: none;
+  }
+
+  .timeline__progress {
+    display: none;
+  }
+
+  .timeline__item {
+    position: relative;
+    display: flex;
+    padding: 0;
+    width: 100%;
+  }
+
+  .timeline__item:nth-child(even) {
+    padding: 0;
+    margin-left: 0;
+    padding-top: 40px;
+  }
+
+  .timeline__marker {
+    display: none;
+  }
+
+  .timeline__marker-dot {
+    width: 16px;
+    height: 16px;
+    background: var(--item-color, #00d4ff);
+    border-radius: 50%;
+    border: 3px solid rgba(10, 10, 15, 1);
+    box-shadow: 0 0 20px var(--item-color, #00d4ff);
+  }
+
+  .timeline__marker-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: var(--item-color, #00d4ff);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: pulse 2s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+  }
+
+  .timeline__card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+
+  .timeline__card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(var(--item-color, 0, 212, 255), 0.4);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(var(--item-color, 0, 212, 255), 0.1);
+  }
+
+  .timeline__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--item-color, #00d4ff), transparent);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .timeline__card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, var(--item-color, #00d4ff) 0%, transparent 70%);
+    opacity: 0.08;
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+    pointer-events: none;
+  }
+
+  .timeline__card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .timeline__icon {
+    width: 52px;
+    height: 52px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: var(--item-color, #00d4ff);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .timeline__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .timeline__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .timeline__period {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--item-color, #00d4ff);
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+  }
+
+  .timeline__location {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .timeline__degree {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white;
+    line-height: 1.3;
+  }
+
+  .timeline__institution {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 14px 0;
+    color: var(--item-color, #00d4ff);
+    opacity: 0.9;
+  }
+
+  .timeline__description {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .timeline__card-glow {
+    position: absolute;
+    bottom: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--item-color, #00d4ff) 0%, transparent 70%);
+    opacity: 0.1;
+    filter: blur(40px);
+    pointer-events: none;
+  }
+
+  /* Certifications Grid */
+  .certifications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    perspective: 1000px;
+  }
+
+  .cert-card {
+    position: relative;
+    height: 180px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+  }
+
+  .cert-card__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cert-card__front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  .cert-card:hover .cert-card__front {
+    border-color: var(--cert-color, #00d4ff);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(var(--cert-color, 0, 212, 255), 0.15);
+    transform: translateY(-8px);
+  }
+
+  .cert-card__front::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--cert-color, #00d4ff);
+    border-radius: 18px 18px 0 0;
+    opacity: 0.8;
+  }
+
+  .cert-card__icon {
+    width: 50px;
+    height: 50px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: var(--cert-color, #00d4ff);
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .cert-card:hover .cert-card__icon {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px var(--cert-color, #00d4ff);
+    background: linear-gradient(135deg, rgba(var(--cert-color, 0, 212, 255), 0.2), transparent);
+  }
+
+  .cert-card__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cert-card__name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 auto 0;
+    color: white;
+    line-height: 1.4;
+  }
+
+  .cert-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .cert-card__issuer {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cert-color, #00d4ff);
+  }
+
+  .cert-card__date {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cert-card__shine {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transform: rotate(25deg);
+    transition: 0.6s;
+    pointer-events: none;
+  }
+
+  .cert-card:hover .cert-card__shine {
+    left: 150%;
+  }
+
+  .cert-card__particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .cert-card__particles span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--cert-color, #00d4ff);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .cert-card__particles span:nth-child(1) {
+    top: 20%;
+    right: 10%;
+  }
+
+  .cert-card__particles span:nth-child(2) {
+    top: 60%;
+    right: 20%;
+  }
+
+  .cert-card__particles span:nth-child(3) {
+    bottom: 20%;
+    right: 15%;
+  }
+
+  /* Background Effects */
+  .education-section__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .floating-shapes {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.3;
+  }
+
+  .shape--1 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 70%);
+    top: 10%;
+    left: -5%;
+  }
+
+  .shape--2 {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+    bottom: 20%;
+    right: -5%;
+  }
+
+  .shape--3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(244, 63, 94, 0.3) 0%, transparent 70%);
+    top: 50%;
+    left: 40%;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .timeline {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .timeline__item:nth-child(even) {
+      padding-top: 0;
+    }
+
+    .certifications-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .education-section__title {
+      font-size: 2.2rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .education-section {
+      padding: 80px 16px 60px;
+    }
+
+    .education-section__title {
+      font-size: 1.8rem;
+    }
+
+    .education-section__badge {
+      font-size: 0.7rem;
+      padding: 6px 12px;
+    }
+
+    .education-tabs {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .education-tab {
+      justify-content: center;
+    }
+
+    .timeline {
+      gap: 20px;
+    }
+
+    .timeline__card {
+      padding: 20px;
+    }
+
+    .timeline__icon {
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+    }
+
+    .timeline__degree {
+      font-size: 1.05rem;
+    }
+
+    .certifications-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cert-card {
+      height: 160px;
+    }
+  }
+</style>

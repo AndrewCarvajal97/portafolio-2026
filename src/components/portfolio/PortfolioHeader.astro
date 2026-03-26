@@ -10,12 +10,12 @@ interface Props {
   name?: string;
   title?: string;
   subtitle?: string;
-  currentSection?: 'about' | 'projects' | 'contact';
+  currentSection?: 'about' | 'projects' | 'contact' | 'education';
 }
 
 const {
-  name = 'Andres Carvajal',
-  title = 'CTO & Full Stack Developer',
+  name = 'Pablo Andrés Carvajal',
+  title = 'Full-Stack Developer & Tech Leader',
   subtitle = '+3 años de experiencia',
   currentSection = 'projects'
 } = Astro.props;
@@ -53,6 +53,16 @@ const {
       data-nav-link="about"
     >
       Sobre Mí
+    </a>
+    <a
+      href="#section-education"
+      class:list={[
+        'portfolio-header__link',
+        { 'active': currentSection === 'education' }
+      ]}
+      data-nav-link="education"
+    >
+      Formación
     </a>
     <a
       href="#section-contact"

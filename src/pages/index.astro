@@ -13,6 +13,7 @@ import ProjectExpanded from '../components/portfolio/ProjectExpanded.astro';
 import PortfolioHeader from '../components/portfolio/PortfolioHeader.astro';
 import ControlsHint from '../components/portfolio/ControlsHint.astro';
 import AboutSection from '../components/portfolio/AboutSection.astro';
+import EducationSection from '../components/portfolio/EducationSection.astro';
 import ContactSection from '../components/portfolio/ContactSection.astro';
 import SectionTitle from '../components/portfolio/SectionTitle.astro';
 ---
@@ -21,8 +22,8 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
   <main class="portfolio" id="portfolio-main">
     <!-- Header with personal branding (fixed) -->
     <PortfolioHeader
-      name="Andres Carvajal"
-      title="CTO & Full Stack Developer"
+      name="Pablo Andrés Carvajal"
+      title="Full-Stack Developer & Tech Leader"
       subtitle="+3 años de experiencia"
       currentSection="projects"
     />
@@ -52,7 +53,12 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
         <AboutSection />
       </section>
 
-      <!-- Section 3: Contact -->
+      <!-- Section 3: Education -->
+      <section id="section-education" class="portfolio__section portfolio__section--education">
+        <EducationSection />
+      </section>
+
+      <!-- Section 4: Contact -->
       <section id="section-contact" class="portfolio__section portfolio__section--contact">
         <ContactSection />
       </section>
