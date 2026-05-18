@@ -17,9 +17,9 @@ export function getResponsiveCarouselConfig(): CarouselConfig {
 
   if (isSmallMobile) {
     return {
-      radius: 4,
-      cardWidth: 2.2,
-      cardHeight: 1.4,
+      radius: 5,
+      cardWidth: 1.8,
+      cardHeight: 1.15,
       autoRotateSpeed: 0.0015,
       dragSensitivity: 0.008,
       dampingFactor: 0.05,
@@ -33,9 +33,9 @@ export function getResponsiveCarouselConfig(): CarouselConfig {
 
   if (isMobile) {
     return {
-      radius: 4.5,
-      cardWidth: 2.8,
-      cardHeight: 1.75,
+      radius: 5.5,
+      cardWidth: 2.3,
+      cardHeight: 1.45,
       autoRotateSpeed: 0.0012,
       dragSensitivity: 0.007,
       dampingFactor: 0.05,
@@ -52,9 +52,9 @@ export function getResponsiveCarouselConfig(): CarouselConfig {
 
 export const CAROUSEL_CONFIG: CarouselConfig = {
   // Carousel geometry
-  radius: 6,
-  cardWidth: 4,
-  cardHeight: 2.5,
+  radius: 7.5,
+  cardWidth: 3.2,
+  cardHeight: 2,
 
   // Animation settings
   autoRotateSpeed: 0.001,
@@ -65,8 +65,8 @@ export const CAROUSEL_CONFIG: CarouselConfig = {
   focusDistance: 1.5,
 
   // Scene atmosphere
-  fogNear: 5,
-  fogFar: 20,
+  fogNear: 8,
+  fogFar: 28,
   backgroundColor: 0x0a0a0c,
   accentColor: 0x00d4ff
 };
@@ -75,7 +75,7 @@ export const CAMERA_CONFIG: CameraConfig = {
   fov: 75,
   near: 0.1,
   far: 1000,
-  position: { x: 0, y: -0.2, z: 12 }
+  position: { x: 0, y: 0, z: 14 }
 };
 
 /**

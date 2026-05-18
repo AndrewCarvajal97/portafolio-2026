@@ -37,8 +37,11 @@ export class Carousel {
     this.state = {
       isDragging: false,
       previousMouseX: 0,
+      previousMouseY: 0,
       targetRotation: 0,
       currentRotation: 0,
+      targetRotationX: 0,
+      currentRotationX: 0,
       activeProject: null,
       isAnimating: false
     };
@@ -73,12 +76,18 @@ export class Carousel {
 
     // Only rotate if no project is focused
     if (!this.state.activeProject) {
-      // Apply damping to rotation
+      // Apply damping to Y-rotation
       this.state.currentRotation +=
         (this.state.targetRotation - this.state.currentRotation) *
         this.config.dampingFactor;
 
+      // Apply damping to X-rotation (vertical tilt)
+      this.state.currentRotationX +=
+        (this.state.targetRotationX - this.state.currentRotationX) *
+        this.config.dampingFactor;
+
       this.group.rotation.y = this.state.currentRotation;
+      this.group.rotation.x = this.state.currentRotationX;
 
       // Auto-rotate when not dragging
       if (!this.state.isDragging) {
@@ -90,28 +99,41 @@ export class Carousel {
   /**
    * Handle mouse/touch start
    */
-  onDragStart(clientX: number): void {
+  onDragStart(clientX: number, clientY: number = 0): void {
     if (this.state.activeProject) return;
     this.state.previousMouseX = clientX;
+    this.state.previousMouseY = clientY;
   }
 
   /**
    * Handle mouse/touch move (called by InputController when mouse is down)
    */
-  onDragMove(clientX: number): void {
+  onDragMove(clientX: number, clientY: number = this.state.previousMouseY): void {
     if (this.state.activeProject) return;
 
     const deltaX = clientX - this.state.previousMouseX;
+    const deltaY = clientY - this.state.previousMouseY;
 
-    // Only start dragging if we moved significantly
-    if (Math.abs(deltaX) > 0) {
+    if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
       if (!this.state.isDragging) {
         this.state.isDragging = true;
         this.emit({ type: 'rotationStart' });
       }
+      // Horizontal drag → rotate around Y axis
       this.state.targetRotation += deltaX * this.config.dragSensitivity;
+
+      // Vertical drag → tilt around X axis, clamped so cards stay readable
+      const X_LIMIT = 0.45; // ~26°
+      this.state.targetRotationX = Math.max(
+        -X_LIMIT,
+        Math.min(
+          X_LIMIT,
+          this.state.targetRotationX + deltaY * this.config.dragSensitivity * 0.6
+        )
+      );
     }
     this.state.previousMouseX = clientX;
+    this.state.previousMouseY = clientY;
   }
 
   /**

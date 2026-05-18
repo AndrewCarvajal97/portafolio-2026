@@ -31,16 +31,19 @@ export class ProjectCard {
     this.textureLoader.crossOrigin = 'anonymous';
     this.config = getResponsiveCarouselConfig();
 
-    // Calculate position in carousel
-    const angle = (index / totalProjects) * Math.PI * 2;
-
     // Create main mesh
     this.mesh = this.createMesh();
     this.edgeMesh = this.createEdges();
     this.mesh.add(this.edgeMesh);
 
-    // Position in carousel circle
-    this.positionInCircle(angle);
+    // Distribute cards on a multi-ring cylinder when there are enough to crowd
+    // a single ring; fall back to a flat circle for small portfolios.
+    if (totalProjects > 8) {
+      this.positionOnCylinder(index, totalProjects);
+    } else {
+      const angle = (index / totalProjects) * Math.PI * 2;
+      this.positionInCircle(angle);
+    }
 
     // Store user data for raycasting
     this.setupUserData();
@@ -149,6 +152,36 @@ export class ProjectCard {
 
     // Look at center
     this.mesh.lookAt(0, 0, 0);
+  }
+
+  /**
+   * Position the card on a multi-ring cylinder. All cards share the same
+   * radial distance, only Y differs across rings. Each card looks at the
+   * cylinder axis at its own Y level, so cards stay upright with no tilt.
+   * Alternating rings are offset by half a slot for a honeycomb feel.
+   */
+  private positionOnCylinder(index: number, total: number): void {
+    const radius = this.config.radius;
+
+    // Pick rings/cols based on total. Aim for ~5 cards per ring.
+    const perRing = Math.max(4, Math.ceil(Math.sqrt(total * 1.6)));
+    const ringCount = Math.ceil(total / perRing);
+
+    const ring = Math.floor(index / perRing);
+    const col = index % perRing;
+
+    const verticalSpacing = this.config.cardHeight * 1.5;
+    const y = (ringCount - 1) / 2 * verticalSpacing - ring * verticalSpacing;
+
+    const angleOffset = (ring % 2) * (Math.PI / perRing);
+    const angle = (col / perRing) * Math.PI * 2 + angleOffset;
+
+    const x = Math.sin(angle) * radius;
+    const z = Math.cos(angle) * radius;
+
+    this.mesh.position.set(x, y, z);
+    // Look at the cylinder axis at the same Y, so the card stays vertical.
+    this.mesh.lookAt(0, y, 0);
   }
 
   /**

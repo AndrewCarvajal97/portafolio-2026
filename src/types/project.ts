@@ -26,6 +26,8 @@ export interface Project {
   featured?: boolean;
   year?: number;
   role?: string;
+  challenges?: string[];
+  experience?: string[];
 }
 
 export interface ProjectMeshUserData extends Project {

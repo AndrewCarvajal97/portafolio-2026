@@ -89,7 +89,7 @@ export class InputController {
     this.startX = event.clientX;
     this.startY = event.clientY;
     this.hasMoved = false;
-    this.carousel.onDragStart(event.clientX);
+    this.carousel.onDragStart(event.clientX, event.clientY);
   };
 
   /**
@@ -110,7 +110,7 @@ export class InputController {
     }
 
     if (this.isMouseDown) {
-      this.carousel.onDragMove(event.clientX);
+      this.carousel.onDragMove(event.clientX, event.clientY);
     } else {
       // Hover effect
       this.carousel.onMouseMove(
@@ -162,7 +162,7 @@ export class InputController {
     this.startX = touch.clientX;
     this.startY = touch.clientY;
     this.hasMoved = false;
-    this.carousel.onDragStart(touch.clientX);
+    this.carousel.onDragStart(touch.clientX, touch.clientY);
   };
 
   /**
@@ -184,7 +184,7 @@ export class InputController {
       event.preventDefault(); // Prevent scroll when dragging
     }
 
-    this.carousel.onDragMove(touch.clientX);
+    this.carousel.onDragMove(touch.clientX, touch.clientY);
   };
 
   /**

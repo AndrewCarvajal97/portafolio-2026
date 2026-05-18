@@ -42,8 +42,11 @@ export interface LightConfig {
 export interface CarouselState {
   isDragging: boolean;
   previousMouseX: number;
+  previousMouseY: number;
   targetRotation: number;
   currentRotation: number;
+  targetRotationX: number;
+  currentRotationX: number;
   activeProject: THREE.Mesh | null;
   isAnimating: boolean;
 }
