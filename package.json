@@ -1,14 +1,24 @@
 {
-  "name": "",
+  "name": "portafolio-2026",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
+  "packageManager": "pnpm@10.11.1",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "optimize:images:force": "node scripts/optimize-images.mjs --force"
+    "optimize:images:force": "node scripts/optimize-images.mjs --force",
+    "audit": "pnpm audit --audit-level=moderate",
+    "audit:fix": "pnpm audit --fix",
+    "outdated": "pnpm outdated",
+    "preinstall": "npx --yes only-allow pnpm"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^25.0.0",
@@ -17,6 +27,20 @@
     "three": "^0.182.0"
   },
   "devDependencies": {
-    "@types/three": "^0.182.0"
+    "@types/three": "^0.182.0",
+    "sharp": "^0.34.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "@parcel/watcher"
+    ],
+    "auditConfig": {
+      "ignoreCves": []
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {}
+    }
   }
 }

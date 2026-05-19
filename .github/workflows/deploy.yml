@@ -1,19 +1,17 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Run on every push to main
   push:
     branches: [main]
-  # Allow manual triggering from the Actions tab
   workflow_dispatch:
 
-# Required permissions for the GitHub Pages deployment action (OIDC).
+# Required permissions for GitHub Pages OIDC deploy.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Cancel any in-progress deploy when a new commit lands so we always publish the latest.
+# Cancel any in-progress deploy so we always publish the latest commit.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -26,26 +24,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Enable Corepack so the exact pnpm version pinned in `packageManager`
+      # (package.json) is used. No need to install pnpm separately.
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
+          cache: pnpm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Security audit (fail on high severity)
+        run: pnpm audit --audit-level=high
+        # Don't block deploys on moderate/low. Use `pnpm run audit` locally
+        # for the stricter check.
+        continue-on-error: true
 
       - name: Optimize images (.webp + .avif)
-        run: npm run optimize:images
+        run: pnpm run optimize:images
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Build with Astro
-        run: npm run build
+        run: pnpm run build
         env:
-          # Astro reads site from astro.config.mjs; this is here as a backup
-          # in case you ever want to override per-environment.
           SITE: https://pablocarvajal.dev
 
       - name: Upload Pages artifact

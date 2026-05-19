@@ -1,0 +1,59 @@
+# Dependabot configuration
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Dependabot reads pnpm-lock.yaml natively when ecosystem is "npm".
+# It opens PRs for outdated/vulnerable packages and GitHub Actions versions.
+
+version: 2
+updates:
+  # JavaScript dependencies (pnpm-lock.yaml)
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Bogota
+    open-pull-requests-limit: 5
+    versioning-strategy: increase-if-necessary
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    labels:
+      - dependencies
+    groups:
+      # Group all non-major updates into a single PR per week — less noise.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+      # Group Astro ecosystem together; they tend to release in lock-step.
+      astro:
+        patterns:
+          - astro
+          - "@astrojs/*"
+      # Group Three.js / 3D libs together.
+      three-stack:
+        patterns:
+          - three
+          - "@types/three"
+          - "@tweenjs/*"
+          - gsap
+    # Only allow direct production deps to bump majors — major bumps in
+    # transitive deps come through pnpm overrides if needed.
+    allow:
+      - dependency-type: direct
+      - dependency-type: indirect
+        update-type: security
+
+  # GitHub Actions versions (workflows under .github/workflows/)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci(deps)
+    labels:
+      - github-actions
+      - dependencies
