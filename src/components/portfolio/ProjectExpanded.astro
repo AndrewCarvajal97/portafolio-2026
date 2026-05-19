@@ -28,8 +28,16 @@ const { class: className = '' } = Astro.props;
 
       <header class="project-expanded__hero">
         <figure class="project-expanded__media">
-          <img id="expanded-image-backdrop" class="project-expanded__image-backdrop" src="" alt="" aria-hidden="true" />
-          <img id="expanded-image" class="project-expanded__image" src="" alt="" />
+          <picture class="project-expanded__picture project-expanded__picture--backdrop" aria-hidden="true">
+            <source id="expanded-image-backdrop-avif" type="image/avif" srcset="" />
+            <source id="expanded-image-backdrop-webp" type="image/webp" srcset="" />
+            <img id="expanded-image-backdrop" class="project-expanded__image-backdrop" src="" alt="" />
+          </picture>
+          <picture class="project-expanded__picture project-expanded__picture--main">
+            <source id="expanded-image-avif" type="image/avif" srcset="" />
+            <source id="expanded-image-webp" type="image/webp" srcset="" />
+            <img id="expanded-image" class="project-expanded__image" src="" alt="" />
+          </picture>
           <span class="project-expanded__media-glow" aria-hidden="true"></span>
         </figure>
 
@@ -92,7 +100,11 @@ const { class: className = '' } = Astro.props;
   class ProjectExpandedController {
     private container: HTMLElement | null;
     private imageEl: HTMLImageElement | null;
+    private imageAvifEl: HTMLSourceElement | null;
+    private imageWebpEl: HTMLSourceElement | null;
     private backdropEl: HTMLImageElement | null;
+    private backdropAvifEl: HTMLSourceElement | null;
+    private backdropWebpEl: HTMLSourceElement | null;
     private mediaEl: HTMLElement | null;
     private titleEl: HTMLElement | null;
     private descEl: HTMLElement | null;
@@ -111,7 +123,11 @@ const { class: className = '' } = Astro.props;
     constructor() {
       this.container = document.getElementById('project-expanded');
       this.imageEl = document.getElementById('expanded-image') as HTMLImageElement;
+      this.imageAvifEl = document.getElementById('expanded-image-avif') as HTMLSourceElement | null;
+      this.imageWebpEl = document.getElementById('expanded-image-webp') as HTMLSourceElement | null;
       this.backdropEl = document.getElementById('expanded-image-backdrop') as HTMLImageElement;
+      this.backdropAvifEl = document.getElementById('expanded-image-backdrop-avif') as HTMLSourceElement | null;
+      this.backdropWebpEl = document.getElementById('expanded-image-backdrop-webp') as HTMLSourceElement | null;
       this.mediaEl = this.container?.querySelector('.project-expanded__media') as HTMLElement | null;
       this.titleEl = document.getElementById('expanded-title');
       this.descEl = document.getElementById('expanded-desc');
@@ -168,12 +184,28 @@ const { class: className = '' } = Astro.props;
       // Reset orientation state before swapping src
       this.mediaEl?.classList.remove('is-portrait', 'is-landscape');
 
-      this.imageEl.src = project.image;
+      // Derive AVIF / WebP / fallback URLs from the project image path.
+      // Only swap formats for local images we control; external URLs are used as-is.
+      const isLocalImage = /^\/[^\/]/.test(project.image);
+      const baseSrc = isLocalImage
+        ? project.image.replace(/\.[a-z0-9]+$/i, '')
+        : null;
+      const fallbackSrc = baseSrc ? `${baseSrc}.webp` : project.image;
+      const webpSrc = baseSrc ? `${baseSrc}.webp` : project.image;
+      const avifSrc = baseSrc ? `${baseSrc}.avif` : project.image;
+
+      // Update sources first so the browser picks the optimal format
+      if (this.imageAvifEl) this.imageAvifEl.srcset = avifSrc;
+      if (this.imageWebpEl) this.imageWebpEl.srcset = webpSrc;
+      if (this.backdropAvifEl) this.backdropAvifEl.srcset = avifSrc;
+      if (this.backdropWebpEl) this.backdropWebpEl.srcset = webpSrc;
+
+      this.imageEl.src = fallbackSrc;
       this.imageEl.alt = project.title;
 
       // Mirror the image into the backdrop element
       if (this.backdropEl) {
-        this.backdropEl.src = project.image;
+        this.backdropEl.src = fallbackSrc;
       }
 
       // Detect orientation once the image is loaded so we can adapt the layout
@@ -416,6 +448,12 @@ const { class: className = '' } = Astro.props;
       0 0 0 1px rgba(var(--project-color-rgb), 0.15),
       0 0 80px -20px rgba(var(--project-color-rgb), 0.4);
     isolation: isolate;
+  }
+
+  /* <picture> wrappers — they must not affect layout. We rely on the inner
+     <img>'s absolute positioning, so the picture itself collapses to contents. */
+  .project-expanded__picture {
+    display: contents;
   }
 
   /* Backdrop — copy of the image, scaled up + blurred + dimmed.

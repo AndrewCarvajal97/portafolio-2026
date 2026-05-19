@@ -272,28 +272,89 @@ export class ProjectCard {
       return texture;
     };
 
-    // Try to load external image first
-    this.textureLoader.load(
-      this.project.image,
-      (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
+    /**
+     * Compose a canvas that matches the card's aspect ratio so portrait images
+     * are letterboxed by a blurred copy of themselves instead of being stretched.
+     * Mirrors the modal's "blurred backdrop + contained image" pattern.
+     */
+    const composeCardTexture = (img: HTMLImageElement): THREE.Texture => {
+      const targetAspect = this.config.cardWidth / this.config.cardHeight;
+      const W = 768;
+      const H = Math.round(W / targetAspect);
 
-        const material = this.mesh.material as THREE.MeshStandardMaterial;
-        material.map = texture;
-        material.needsUpdate = true;
-        console.log(`Loaded texture for: ${this.project.title}`);
-      },
-      undefined,
-      () => {
-        // On error, use gradient placeholder
-        console.log(`Using placeholder for: ${this.project.title}`);
-        const material = this.mesh.material as THREE.MeshStandardMaterial;
-        material.map = createGradientTexture();
-        material.needsUpdate = true;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d')!;
+
+      // Backdrop: a blurred, dimmed copy of the image filling the whole canvas.
+      ctx.save();
+      try {
+        ctx.filter = 'blur(28px) brightness(0.55) saturate(1.3)';
+      } catch {
+        // ignore if not supported
       }
-    );
+      // Draw scaled-up to avoid blur edges
+      const overscan = 1.18;
+      const imgAspect = img.width / img.height;
+      let bgW: number, bgH: number;
+      if (imgAspect > targetAspect) {
+        bgH = H * overscan;
+        bgW = bgH * imgAspect;
+      } else {
+        bgW = W * overscan;
+        bgH = bgW / imgAspect;
+      }
+      ctx.drawImage(img, (W - bgW) / 2, (H - bgH) / 2, bgW, bgH);
+      ctx.restore();
+
+      // Subtle tinted veil with the project color for cohesion
+      const c = new THREE.Color(this.project.color);
+      ctx.fillStyle = `rgba(${Math.floor(c.r * 255)}, ${Math.floor(c.g * 255)}, ${Math.floor(c.b * 255)}, 0.10)`;
+      ctx.fillRect(0, 0, W, H);
+
+      // Foreground: original image, contained inside the card.
+      let fgW: number, fgH: number, fgX: number, fgY: number;
+      const PADDING_RATIO = 0.06; // 6% breathing room
+      const availW = W * (1 - PADDING_RATIO * 2);
+      const availH = H * (1 - PADDING_RATIO * 2);
+      if (imgAspect > availW / availH) {
+        fgW = availW;
+        fgH = availW / imgAspect;
+      } else {
+        fgH = availH;
+        fgW = availH * imgAspect;
+      }
+      fgX = (W - fgW) / 2;
+      fgY = (H - fgH) / 2;
+      ctx.drawImage(img, fgX, fgY, fgW, fgH);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      return texture;
+    };
+
+    // Try to load external image first
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      const material = this.mesh.material as THREE.MeshStandardMaterial;
+      material.map = composeCardTexture(img);
+      material.needsUpdate = true;
+    };
+
+    img.onerror = () => {
+      // On error, use gradient placeholder
+      console.log(`Using placeholder for: ${this.project.title}`);
+      const material = this.mesh.material as THREE.MeshStandardMaterial;
+      material.map = createGradientTexture();
+      material.needsUpdate = true;
+    };
+
+    img.src = this.project.image;
   }
 
   /**

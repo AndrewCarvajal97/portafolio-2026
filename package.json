@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "optimize:images:force": "node scripts/optimize-images.mjs --force"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^25.0.0",

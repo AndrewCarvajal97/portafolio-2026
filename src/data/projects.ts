@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Portfolio Projects Data
  *
  * This file contains all project information displayed in the 3D carousel.
@@ -15,7 +15,7 @@ export const projects: Project[] = [
     longDescription: 'Tech Leader en AIA Technology. Contribuí al desarrollo de una plataforma SaaS completa para gestión de restaurantes usando NestJS, PostgreSQL, React 19 y TypeScript. Implementé pagos divididos con Stripe Connect (platform, restaurant_pool, direct_branch), integración con Catering Rewards API, y conectores de delivery (DoorDash, Uber Direct, Cartwheel). Trabajé sobre una arquitectura multi-tenant existente en PostgreSQL (stored procedures y auditoría) aportando módulos, integraciones y mejoras. Desarrollé agentes de IA para asistentes de gerentes con streaming SSE y renderizado de gráficos.',
     tags: ['NestJS', 'TypeScript', 'React 19', 'PostgreSQL', 'Stripe Connect', 'AI Agents'],
     color: 0x00d4ff,
-    image: '/AIA-Landing.png',
+    image: '/AIA-Landing.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -38,10 +38,10 @@ export const projects: Project[] = [
     id: 'incconnection-suite',
     title: 'INCConnection — Classroom & App',
     description: 'Plataforma universitaria virtual completa: panel admin Classroom + app de estudiantes con Google Workspace.',
-    longDescription: 'Full-Stack Developer en INCConnection. Construí la suite completa: el panel administrativo Classroom para gestión académica (cursos, secciones, asistencia, calificaciones, calendarios) y la aplicación de estudiantes con experiencia integrada de Google Workspace mediante Domain-Wide Delegation. Implementé Google Calendar, Meet y Drive sobre un backend NestJS modular, gestiono service accounts en Google Cloud y flujos OAuth seguros. Diseñé permisos por rol (admin, docente, estudiante) y un sistema de notificaciones que mantiene sincronizadas a las dos audiencias.',
+    longDescription: 'Construí la suite completa: el panel administrativo Classroom para gestión académica (cursos, secciones, asistencia, calificaciones, calendarios) y la aplicación de estudiantes con experiencia integrada de Google Workspace mediante Domain-Wide Delegation. Implementé Google Calendar, Meet y Drive sobre un backend NestJS modular, gestiono service accounts en Google Cloud y flujos OAuth seguros. Diseñé permisos por rol (admin, docente, estudiante) y un sistema de notificaciones que mantiene sincronizadas a las dos audiencias.',
     tags: ['NestJS', 'TypeScript', 'React', 'Google Workspace', 'OAuth 2.0', 'PostgreSQL'],
     color: 0x8844ff,
-    image: '/innco-completo.png',
+    image: '/innco-completo.webp',
     links: [
       { type: 'live', url: 'https://dev.admin.innconection-plus.texelbit.com/classroom', label: 'Admin Classroom' },
       { type: 'live', url: 'https://dev.app.innconection.texelbit.com/', label: 'App Estudiantes' }
@@ -68,7 +68,7 @@ export const projects: Project[] = [
     longDescription: 'Full-Stack Developer en el sistema de Gestión Contable de Texelbit. Construí módulos de facturación electrónica, libros contables, conciliación bancaria y reportería fiscal. Diseñé el motor de asientos automáticos con reglas configurables por tipo de operación, importación masiva de movimientos bancarios y exportación de formatos exigidos por la autoridad tributaria. Optimicé queries de balances y estados financieros sobre grandes volúmenes históricos.',
     tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'Facturación Electrónica'],
     color: 0x22cc88,
-    image: 'https://picsum.photos/seed/gestion-contable/600/400',
+    image: '/gestion-contable.webp',
     links: [
       { type: 'live', url: 'https://gestion-contable.texelbit.com/' }
     ],
@@ -94,7 +94,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé AIA Docs, la plataforma central de documentación técnica, operativa y comercial del ecosistema AIA. Incluye versionado por release, control de acceso por rol, búsqueda semántica con embeddings vectoriales y un editor MDX integrado. Sirve como única fuente de verdad para onboarding de empleados, manuales de restaurantes y especificaciones de APIs internas.',
     tags: ['Next.js', 'TypeScript', 'MDX', 'Pinecone', 'Embeddings'],
     color: 0x4488ff,
-    image: '/AIA-Landing.png',
+    image: '/proyectos-protegidos.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -120,7 +120,7 @@ export const projects: Project[] = [
     longDescription: 'Implementación mejorada del sistema de rewards que originalmente dependía exclusivamente del proveedor externo Catering Rewards. Le dio a AIA la libertad de ofrecer el servicio a sus clientes finales con configuraciones y control mucho más granular, manteniendo el proveedor externo como complemento para usuarios que ya contaban con él. La pieza clave es la aplicación del patrón Strategy: una interfaz común de RewardsProvider que permite intercambiar en tiempo de ejecución entre el proveedor interno mejorado y cualquier proveedor externo integrado, sin tocar el código consumidor (checkout, app móvil, dashboard). Incluye motor de reglas configurable por restaurante, niveles, expiración de puntos y detección de fraude.',
     tags: ['NestJS', 'TypeScript', 'Strategy Pattern', 'PostgreSQL', 'Redis', 'Event Sourcing'],
     color: 0xffaa44,
-    image: '/aia-rewards-points.png',
+    image: '/aia-rewards-points.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -146,7 +146,7 @@ export const projects: Project[] = [
     longDescription: 'Portal web que diseñé para los clientes finales del ecosistema AIA: les permite hacer seguimiento de sus rewards (puntos, niveles, historial), revisar sus órdenes y premios canjeados, explorar campañas activas y, sobre todo, hacer tracking de sus órdenes en tiempo real mediante Server-Sent Events. Apenas el driver confirma el pickup en el restaurante, el portal abre un canal SSE que empuja actualizaciones de estado y posición hasta la entrega, sin polling y manteniendo la latencia sub-segundo. Se integra con el motor de Rewards multi-proveedor, el sistema de cupones, el flujo de órdenes y el tracking GPS de drivers.',
     tags: ['React', 'TypeScript', 'NestJS', 'SSE', 'Real-time', 'PostgreSQL'],
     color: 0xff8844,
-    image: '/aia-rewards.png',
+    image: '/aia-rewards.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -172,7 +172,7 @@ export const projects: Project[] = [
     longDescription: 'Sistema de tracking en tiempo real para los conductores propios y de terceros de AIA. Recibe posiciones GPS por WebSocket, calcula ETAs dinámicos al cliente, dibuja rutas optimizadas y aplica geocercas para eventos operativos (llegada al restaurante, salida, llegada al cliente). Incluye panel de despacho con mapa en vivo y reproducción histórica de rutas.',
     tags: ['NestJS', 'WebSockets', 'React', 'Mapbox', 'PostGIS', 'Redis'],
     color: 0x00ccff,
-    image: '/AIA-Landing.png',
+    image: '/driver-tracking.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -198,7 +198,7 @@ export const projects: Project[] = [
     longDescription: 'Versión móvil del dashboard administrativo de AIA. Replica las funcionalidades de gestión del web (operación de restaurantes, métricas, configuración, órdenes, equipo) y embebe los mismos agentes de IA del dashboard para que los gerentes puedan consultarles en cualquier momento. Construida con React Native + Expo, consume las mismas APIs y comparte tipos/SDK con la plataforma web a través de un paquete monorepo, garantizando paridad funcional entre ambos clientes.',
     tags: ['React Native', 'Expo', 'TypeScript', 'AI Agents', 'SSE', 'Monorepo'],
     color: 0x00e0a8,
-    image: '/AIA-Landing.png',
+    image: '/proyectos-protegidos.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -224,7 +224,7 @@ export const projects: Project[] = [
     longDescription: 'App móvil del ecosistema INCConnection que reúne en una sola experiencia los cursos del estudiante, calendario académico sincronizado con Google Calendar, links rápidos a sesiones Meet, control de asistencia y notificaciones de avisos académicos. Construida en React Native + Expo, consume el mismo backend NestJS de la suite web.',
     tags: ['React Native', 'Expo', 'TypeScript', 'Google Calendar', 'Push Notifications'],
     color: 0xaa66ff,
-    image: '/incconnection-mobile.png',
+    image: '/incconnection-mobile.webp',
     links: [
       { type: 'live', url: 'https://dev.app.innconection.texelbit.com/' }
     ],
@@ -250,7 +250,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé un sistema de cupones y descuentos ad-hoc exclusivo del ecosistema AIA. Permite al equipo de marketing crear campañas con descuentos por porcentaje o monto fijo, cupones promocionales para clientes, códigos de uso único o multi-uso, vigencia temporal, restricciones por sucursal/producto y montos mínimos. Incluye generación masiva de códigos, panel de seguimiento de redenciones y métricas por campaña, integrado con el checkout de la plataforma AIA.',
     tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'Redis', 'Marketing'],
     color: 0xff6688,
-    image: '/aia-cupons.png',
+    image: '/aia-cupons.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -276,7 +276,7 @@ export const projects: Project[] = [
     longDescription: 'Founding Developer de Galatea Labs. Contribuidor principal en productos potenciados por IA y desarrollo de plataforma. Creé la serie de blogs "Building AI Presence". Desarrollé el frontend con React/TypeScript, animaciones GSAP e interfaces Three.js, creando experiencias visuales inmersivas que reflejan la innovación tecnológica.',
     tags: ['React', 'TypeScript', 'GSAP', 'Three.js', 'AI Integration'],
     color: 0xff00d4,
-    image: 'galatealabs.png',
+    image: '/galatealabs.webp',
     links: [
       { type: 'live', url: 'https://galatealabs.ai' }
     ],
@@ -298,25 +298,27 @@ export const projects: Project[] = [
   {
     id: 'voyagr',
     title: 'Voyagr',
-    description: 'Aplicación de viajes con IA y realidad aumentada para conectar viajeros con destinos turísticos.',
-    longDescription: 'Tech Leader del proyecto Voyagr. Lideré el desarrollo de servidores MCP e integraciones de IA. Implementé arquitecturas multi-tenant y desarrollo móvil con React Native/Expo. La plataforma conecta viajeros con destinos turísticos y negocios locales mediante recomendaciones generadas por la comunidad usando IA y realidad aumentada.',
-    tags: ['Node.js', 'React Native', 'Next.js', 'AI/LLMs', 'MCP Servers'],
+    description: 'App móvil multiplataforma de viajes: descubrimiento de destinos, planificación de trips, mensajería y reconocimiento de lugares con cámara.',
+    longDescription: 'Desarrollador principal y Tech Leader de Voyagr, una app móvil multiplataforma (iOS, Android y web) construida con Expo + React Native y New Architecture. Permite descubrir destinos jerárquicamente (países → estados → ciudades → lugares de interés), planificar viajes (Journey) con itinerarios, intereses y compañeros, mensajería entre viajeros (chats directos, grupales y salas), autenticación multi-proveedor (email, Google, Apple, OTP por email/teléfono) y un módulo de reconocimiento de lugares vía cámara que sube capturas al backend. Arquitectura modular por features con file-based routing (Expo Router 6), patrones de diseño aplicados (Singleton, Factory, Repository, Provider) y consumo de tres APIs REST desacopladas (Auth, Localization y Core). Definí convenciones técnicas, documentación interna y pipeline EAS Build del proyecto.',
+    tags: ['React Native', 'Expo', 'TypeScript', 'Expo Router', 'Reanimated', 'EAS Build'],
     color: 0x00ff88,
-    image: 'https://picsum.photos/seed/voyagr/600/400',
-    links: [],
+    image: '/voyagr.webp',
+    links: [{
+      type: 'live', url: 'https://voyagr.com'
+    }],
     featured: true,
-    role: 'Tech Leader',
+    role: 'Tech Leader & Lead Developer',
     challenges: [
-      'Definir un protocolo MCP estable que expusiera herramientas de viaje a múltiples agentes de IA.',
-      'Generar recomendaciones de calidad con datos comunitarios escasos al inicio (cold start).',
-      'Integrar realidad aumentada sobre cámara móvil con performance aceptable en dispositivos reales.',
-      'Manejar un dominio multi-tenant (operadores turísticos, viajeros, negocios locales) sin fricción.'
+      'Orquestar tres clientes Axios (Auth, Localization, Core) sobre un singleton BaseWebServices con manejo unificado de tokens y distinción entre endpoints autenticados y de auth.',
+      'Integrar tres proveedores de autenticación (email tradicional, Google Sign-In, Apple Sign-In) con almacenamiento seguro (expo-secure-store + AsyncStorage), OTP por email/teléfono y deep linking nativo (`voyagr://auth`).',
+      'Diseñar un sistema propio de internacionalización con ServiceCache, structs tipadas y carga dinámica de traducciones desde API según el locale del dispositivo.',
+      'Implementar un pipeline de captura multimedia (expo-camera / expo-image-picker) con preview, retake y subida multipart/form-data integrado al flujo de reconocimiento de lugares.'
     ],
     experience: [
-      'Aprendí a diseñar y exponer servidores MCP productivos para asistentes externos.',
-      'Profundicé en pipelines de recomendación híbridos (contenido + colaborativo) en etapa temprana.',
-      'Refiné mi liderazgo técnico de equipos remotos pequeños con ciclos cortos.',
-      'Adquirí experiencia con AR en React Native: cámaras, sensores y overlays geo-anclados.'
+      'Lideré la definición de arquitectura modular por features, convenciones de naming (componentes prefijo "V", servicios sufijo Services) y documentación interna (ARCHITECTURE.md, LLM_GUIDE.md, NAVIGATION.md).',
+      'Apliqué patrones de diseño clásicos (Singleton, Factory, Repository, Provider, Service Cache) sobre TypeScript estricto en un cliente móvil productivo.',
+      'Profundicé en el ecosistema Expo moderno: New Architecture habilitada, Expo Router 6 con typed routes, Reanimated 4 con Worklets y EAS Build para distribución.',
+      'Maduré decisiones de UX móvil críticas: navegación Stack centralizada (StackNavigationManager), gestión consistente del botón back en Android, i18n y caching de cliente con ServiceCache.'
     ]
   },
   {
@@ -326,7 +328,7 @@ export const projects: Project[] = [
     longDescription: 'Creé un framework de agentes AI multi-LLM desde cero con cumplimiento de principios SOLID e inyección de dependencias. Incluye migraciones de SDKs de proveedores y manejo de tool_use de Anthropic. Paquete publicado en NPM para facilitar la integración de múltiples LLMs (OpenAI, Anthropic) en aplicaciones TypeScript/Node.js.',
     tags: ['TypeScript', 'Node.js', 'OpenAI', 'Anthropic', 'Multi-LLM'],
     color: 0xffaa00,
-    image: 'https://picsum.photos/seed/asyagents/600/400',
+    image: '/libreria.webp',
     links: [
       { type: 'live', url: 'https://www.npmjs.com/package/@andrewcarvajal97/asy-neuronal-agents' },
       { type: 'github', url: 'https://github.com/andrewcarvajal97' }
@@ -353,7 +355,7 @@ export const projects: Project[] = [
     longDescription: 'Sistema avanzado de gestión de proyectos 3D con seguimiento en tiempo real, visualización 3D basada en navegador con Three.js, y control de versiones. Redujo los tiempos de aprobación en un 60%.',
     tags: ['PHP', 'JavaScript', 'Three.js', 'HTML5', 'CSS3'],
     color: 0x44aaff,
-    image: 'https://picsum.photos/seed/mudi3d/600/400',
+    image: '/proyectos-protegidos.webp',
     links: [
       { type: 'github', url: 'https://github.com/andrewcarvajal97' }
     ],
