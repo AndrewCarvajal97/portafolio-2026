@@ -41,15 +41,16 @@ const { title, subtitle, section, class: className = '' } = Astro.props;
 <style>
   .section-title {
     position: absolute;
-    left: 40px;
-    bottom: 80px;
+    left: clamp(16px, 4vw, 40px);
+    bottom: clamp(60px, 10vh, 80px);
     z-index: 50;
     pointer-events: none;
+    max-width: calc(100% - 32px);
   }
 
   .section-title__heading {
     margin: 0;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 5vw, 3rem);
     font-weight: 800;
     letter-spacing: -0.02em;
     color: #ffffff;

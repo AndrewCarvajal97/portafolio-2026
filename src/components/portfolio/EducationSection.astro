@@ -355,32 +355,27 @@ const certifications = [
 
   gsap.registerPlugin(ScrollTrigger);
 
-  class EducationAnimations {
-    private section: HTMLElement | null;
-    private tabs: NodeListOf<Element>;
-    private contents: NodeListOf<Element>;
-    private scroller: HTMLElement | null;
+  let ctx: gsap.Context | null = null;
 
-    constructor() {
-      this.section = document.getElementById('education-content');
-      this.tabs = document.querySelectorAll('.education-tab');
-      this.contents = document.querySelectorAll('.education-content');
-      this.scroller = document.getElementById('scroll-container');
+  function initEducationAnimations() {
+    const section = document.getElementById('education-content');
+    const scroller = document.getElementById('scroll-container');
+    if (!section) return;
 
-      if (!this.section) return;
+    // Cleanup previous instance
+    ctx?.revert();
 
-      this.init();
-    }
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    private init(): void {
-      // Configure ScrollTrigger to use the custom scroll container
-      if (this.scroller) {
-        ScrollTrigger.scrollerProxy(this.scroller, {
-          scrollTop(value: number | undefined) {
-            if (arguments.length && value !== undefined) {
-              (document.getElementById('scroll-container') as HTMLElement).scrollTop = value;
+    ctx = gsap.context(() => {
+      // Configure ScrollTrigger scroller proxy
+      if (scroller) {
+        ScrollTrigger.scrollerProxy(scroller, {
+          scrollTop(value?: number) {
+            if (value !== undefined) {
+              scroller.scrollTop = value;
             }
-            return document.getElementById('scroll-container')?.scrollTop || 0;
+            return scroller.scrollTop;
           },
           getBoundingClientRect() {
             return {
@@ -392,226 +387,181 @@ const certifications = [
           }
         });
 
-        this.scroller.addEventListener('scroll', () => {
-          ScrollTrigger.update();
-        });
+        scroller.addEventListener('scroll', () => ScrollTrigger.update());
       }
 
-      this.setupTabs();
-      this.animateOnView();
-      this.setupHoverEffects();
-      this.animateFloatingShapes();
-    }
+      // Setup tabs (always needed, even with reduced motion)
+      setupTabs(section);
 
-    private setupTabs(): void {
-      this.tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const targetTab = tab.getAttribute('data-tab');
-          
-          // Update active tab
-          this.tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-
-          // Switch content with animation
-          this.contents.forEach(content => {
-            const contentType = content.getAttribute('data-content');
-            if (contentType === targetTab) {
-              gsap.set(content, { display: 'block' });
-              gsap.fromTo(content, 
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-              );
-              content.classList.add('active');
-              
-              // Re-trigger animations for the new content
-              if (targetTab === 'certifications') {
-                this.animateCertificationsOnSwitch();
-              }
-            } else {
-              content.classList.remove('active');
-              gsap.set(content, { display: 'none' });
-            }
-          });
-        });
-      });
-    }
-
-    private animateOnView(): void {
-      // Animate header and tabs immediately
-      const header = this.section?.querySelector('.education-section__header');
-      const tabsEl = this.section?.querySelector('.education-tabs');
-      
-      if (header && tabsEl) {
-        gsap.fromTo([header, tabsEl],
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out', delay: 0.1 }
-        );
-      }
-
-      // Animate timeline items with stagger
-      const timelineItems = this.section?.querySelectorAll('.timeline__item');
-      const timelineProgress = this.section?.querySelector('.timeline__progress') as HTMLElement;
-      
-      if (timelineItems && timelineItems.length > 0) {
-        // Animate all cards with stagger
+      if (prefersReducedMotion) {
+        // Set final states immediately
+        const header = section.querySelector('.education-section__header');
+        const tabsEl = section.querySelector('.education-tabs');
+        const timelineItems = section.querySelectorAll('.timeline__item');
         const cards = Array.from(timelineItems).map(item => item.querySelector('.timeline__card'));
         const markers = Array.from(timelineItems).map(item => item.querySelector('.timeline__marker'));
-        
-        gsap.fromTo(markers.filter(Boolean),
-          { scale: 0, opacity: 0 },
-          { 
-            scale: 1, 
-            opacity: 1, 
-            duration: 0.4, 
-            stagger: 0.15,
-            ease: 'back.out(1.7)',
-            delay: 0.3
-          }
-        );
-        
-        gsap.fromTo(cards.filter(Boolean),
-          { opacity: 0, x: -20 },
-          { 
-            opacity: 1, 
-            x: 0, 
-            duration: 0.5, 
-            stagger: 0.12,
-            ease: 'power2.out',
-            delay: 0.4
-          }
-        );
+
+        gsap.set([header, tabsEl].filter(Boolean), { opacity: 1, y: 0 });
+        gsap.set(markers.filter(Boolean), { scale: 1, opacity: 1 });
+        gsap.set(cards.filter(Boolean), { opacity: 1, x: 0 });
+        return;
       }
 
-      // Animate timeline progress based on scroll
-      if (timelineProgress && this.scroller) {
-        this.scroller.addEventListener('scroll', () => {
-          const timeline = this.section?.querySelector('.timeline');
-          if (!timeline) return;
-          
-          const rect = timeline.getBoundingClientRect();
-          const viewHeight = window.innerHeight;
-          const progress = Math.max(0, Math.min(1, 
-            (viewHeight - rect.top) / (rect.height + viewHeight * 0.3)
-          ));
-          
-          gsap.set(timelineProgress, { scaleY: progress });
+      // Animate elements on view
+      animateOnView(section, scroller);
+      setupHoverEffects(section);
+      animateFloatingShapes(section);
+    }, section);
+  }
+
+  function setupTabs(section: HTMLElement): void {
+    const tabs = section.querySelectorAll('.education-tab');
+    const contents = section.querySelectorAll('.education-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.getAttribute('data-tab');
+
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        contents.forEach(content => {
+          const contentType = content.getAttribute('data-content');
+          if (contentType === targetTab) {
+            gsap.set(content, { display: 'block' });
+            gsap.fromTo(content,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+            );
+            content.classList.add('active');
+
+            if (targetTab === 'certifications') {
+              animateCertificationsOnSwitch(section);
+            }
+          } else {
+            content.classList.remove('active');
+            gsap.set(content, { display: 'none' });
+          }
         });
-      }
+      });
+    });
+  }
 
-      // Certifications are hidden by default, animate on tab switch
-    }
+  function animateOnView(section: HTMLElement, scroller: HTMLElement | null): void {
+    const header = section.querySelector('.education-section__header');
+    const tabsEl = section.querySelector('.education-tabs');
 
-    private animateCertificationsOnSwitch(): void {
-      const certCards = this.section?.querySelectorAll('.cert-card');
-      if (!certCards) return;
-
-      gsap.fromTo(certCards,
-        { 
-          opacity: 0, 
-          scale: 0.8,
-          y: 20
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.05,
-          ease: 'back.out(1.4)'
-        }
+    if (header && tabsEl) {
+      gsap.fromTo([header, tabsEl],
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out', delay: 0.1 }
       );
     }
 
-    private setupHoverEffects(): void {
-      // Timeline card hover
-      const timelineCards = this.section?.querySelectorAll('.timeline__card');
-      timelineCards?.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-          gsap.to(card, {
-            scale: 1.02,
-            boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        });
+    const timelineItems = section.querySelectorAll('.timeline__item');
+    const timelineProgress = section.querySelector('.timeline__progress') as HTMLElement;
 
-        card.addEventListener('mouseleave', () => {
-          gsap.to(card, {
-            scale: 1,
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        });
-      });
+    if (timelineItems && timelineItems.length > 0) {
+      const cards = Array.from(timelineItems).map(item => item.querySelector('.timeline__card'));
+      const markers = Array.from(timelineItems).map(item => item.querySelector('.timeline__marker'));
 
-      // Certification card hover
-      const certCards = this.section?.querySelectorAll('.cert-card');
-      certCards?.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-          gsap.to(card, {
-            y: -10,
-            scale: 1.05,
-            duration: 0.4,
-            ease: 'power2.out'
-          });
-          
-          // Animate particles
-          const particles = card.querySelectorAll('.cert-card__particles span');
-          gsap.to(particles, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.3,
-            stagger: 0.1
-          });
-        });
+      gsap.fromTo(markers.filter(Boolean),
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.4, stagger: 0.15, ease: 'back.out(1.7)', delay: 0.3 }
+      );
 
-        card.addEventListener('mouseleave', () => {
-          gsap.to(card, {
-            y: 0,
-            scale: 1,
-            duration: 0.4,
-            ease: 'power2.out'
-          });
-          
-          const particles = card.querySelectorAll('.cert-card__particles span');
-          gsap.to(particles, {
-            opacity: 0,
-            scale: 0,
-            duration: 0.2
-          });
-        });
-      });
+      gsap.fromTo(cards.filter(Boolean),
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.5, stagger: 0.12, ease: 'power2.out', delay: 0.4 }
+      );
     }
 
-    private animateFloatingShapes(): void {
-      const shapes = this.section?.querySelectorAll('.shape');
-      if (!shapes) return;
-
-      shapes.forEach((shape, index) => {
-        gsap.to(shape, {
-          y: `random(-30, 30)`,
-          x: `random(-20, 20)`,
-          rotation: `random(-15, 15)`,
-          duration: `random(4, 6)`,
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: index * 0.5
+    // Timeline progress via ScrollTrigger instead of raw scroll listener
+    if (timelineProgress && scroller) {
+      const timeline = section.querySelector('.timeline');
+      if (timeline) {
+        ScrollTrigger.create({
+          trigger: timeline,
+          scroller: scroller,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          onUpdate: (self) => {
+            gsap.set(timelineProgress, { scaleY: self.progress });
+          }
         });
-      });
+      }
     }
   }
 
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    new EducationAnimations();
-  });
+  function animateCertificationsOnSwitch(section: HTMLElement): void {
+    const certCards = section.querySelectorAll('.cert-card');
+    if (!certCards.length) return;
 
-  // Re-initialize on Astro page transitions
-  document.addEventListener('astro:page-load', () => {
-    new EducationAnimations();
-  });
+    gsap.fromTo(certCards,
+      { opacity: 0, scale: 0.8, y: 20 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'back.out(1.4)' }
+    );
+  }
+
+  function setupHoverEffects(section: HTMLElement): void {
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 769px)', () => {
+      const timelineCards = section.querySelectorAll('.timeline__card');
+      timelineCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, { scale: 1.02, duration: 0.3, ease: 'power2.out' });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { scale: 1, duration: 0.3, ease: 'power2.out' });
+        });
+      });
+
+      const certCards = section.querySelectorAll('.cert-card');
+      certCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, { y: -10, scale: 1.05, duration: 0.4, ease: 'power2.out' });
+          const particles = card.querySelectorAll('.cert-card__particles span');
+          gsap.to(particles, { opacity: 1, scale: 1, duration: 0.3, stagger: 0.1 });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { y: 0, scale: 1, duration: 0.4, ease: 'power2.out' });
+          const particles = card.querySelectorAll('.cert-card__particles span');
+          gsap.to(particles, { opacity: 0, scale: 0, duration: 0.2 });
+        });
+      });
+    });
+  }
+
+  function animateFloatingShapes(section: HTMLElement): void {
+    const shapes = section.querySelectorAll('.shape');
+    if (!shapes.length) return;
+
+    shapes.forEach((shape, index) => {
+      gsap.to(shape, {
+        y: 'random(-30, 30)',
+        x: 'random(-20, 20)',
+        rotation: 'random(-15, 15)',
+        duration: 'random(4, 6)',
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: index * 0.5,
+        scrollTrigger: {
+          trigger: section,
+          scroller: document.getElementById('scroll-container'),
+          toggleActions: 'play pause resume pause'
+        }
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEducationAnimations);
+  } else {
+    initEducationAnimations();
+  }
 </script>
 
 <style>
@@ -620,8 +570,9 @@ const certifications = [
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 100px 24px 80px;
+    padding: clamp(24px, 3.5vh, 48px) 24px clamp(28px, 4vh, 56px);
     min-height: 100vh;
+    min-height: 100dvh;
     z-index: 2;
     background: transparent;
     overflow: hidden;
@@ -632,7 +583,7 @@ const certifications = [
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 48px;
+    gap: clamp(18px, 3vh, 28px);
     position: relative;
     z-index: 2;
   }
@@ -667,10 +618,11 @@ const certifications = [
   }
 
   .education-section__title {
-    font-size: 3rem;
+    font-size: clamp(1.65rem, 5.5vw, 3rem);
     font-weight: 800;
     margin: 0;
     line-height: 1.1;
+    letter-spacing: -0.02em;
     background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -982,14 +934,14 @@ const certifications = [
   /* Certifications Grid */
   .certifications-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: clamp(12px, 2vw, 24px);
     perspective: 1000px;
   }
 
   .cert-card {
     position: relative;
-    height: 180px;
+    height: clamp(160px, 22vw, 200px);
     cursor: pointer;
     transform-style: preserve-3d;
   }

@@ -13,9 +13,17 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<div id="carousel-container" class:list={['carousel-container', className]}>
+<div
+  id="carousel-container"
+  class:list={['carousel-container', className]}
+  role="region"
+  aria-label="Carrusel de proyectos. Usa las flechas izquierda y derecha para navegar, Enter para seleccionar."
+  aria-roledescription="carrusel"
+  tabindex="0"
+>
   <!-- Three.js canvas will be appended here -->
 </div>
+<div id="carousel-announcer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
 
 <script>
   import { SceneManager, Carousel, InputController, TweenManager } from '../../lib/three';
@@ -42,8 +50,6 @@ const { class: className = '' } = Astro.props;
         this.sceneManager = SceneManager.getInstance();
         this.sceneManager.initialize(container);
 
-        // Note: TweenManager loop is NOT started here because SceneManager
-        // already calls tweenUpdate() in its render loop
         this.tweenManager = TweenManager.getInstance();
 
         // Create carousel with projects
@@ -57,8 +63,6 @@ const { class: className = '' } = Astro.props;
 
         // Start rendering
         this.sceneManager.start();
-
-        console.log('Carousel3D initialized successfully with', projects.length, 'projects');
       } catch (error) {
         console.error('Error initializing Carousel3D:', error);
       }
@@ -67,7 +71,6 @@ const { class: className = '' } = Astro.props;
     private setupEventListeners(): void {
       // Listen for project selection
       this.carousel.on('projectSelect', (event) => {
-        console.log('Carousel event: projectSelect', event.project?.title);
         if (event.project) {
           this.dispatchProjectEvent('project-selected', event.project);
         }
@@ -75,15 +78,11 @@ const { class: className = '' } = Astro.props;
 
       // Listen for project deselection
       this.carousel.on('projectDeselect', (event) => {
-        console.log('Carousel event: projectDeselect');
         this.dispatchProjectEvent('project-deselected', null);
       });
     }
 
     private dispatchProjectEvent(eventName: string, project: Project | null): void {
-      console.log('Dispatching event:', eventName, project?.title);
-
-      // Dispatch on document for global listeners
       const docEvent = new CustomEvent(eventName, {
         detail: { project },
         bubbles: true,
@@ -91,7 +90,6 @@ const { class: className = '' } = Astro.props;
       });
       document.dispatchEvent(docEvent);
 
-      // Also dispatch on container
       const containerEvent = new CustomEvent(eventName, {
         detail: { project },
         bubbles: true,
@@ -159,5 +157,24 @@ const { class: className = '' } = Astro.props;
     opacity: 0;
     transform: scale(0.95);
     pointer-events: none;
+  }
+
+  /* Mobile: blur(20px) es costoso. Saltamos filter, solo opacity. */
+  @media (max-width: 768px) {
+    .carousel-container.blurred {
+      filter: none;
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-container {
+      transition: opacity 0.2s ease;
+    }
+    .carousel-container.blurred {
+      filter: none;
+      transform: none;
+    }
   }
 </style>

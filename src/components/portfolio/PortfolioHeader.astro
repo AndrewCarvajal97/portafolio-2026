@@ -33,7 +33,7 @@ const {
     </div>
   </div>
 
-  <nav class="portfolio-header__nav">
+  <nav class="portfolio-header__nav" aria-label="Navegación principal">
     <a
       href="#section-projects"
       class:list={[
@@ -41,6 +41,7 @@ const {
         { 'active': currentSection === 'projects' }
       ]}
       data-nav-link="projects"
+      aria-current={currentSection === 'projects' ? 'true' : undefined}
     >
       Proyectos
     </a>
@@ -51,6 +52,7 @@ const {
         { 'active': currentSection === 'about' }
       ]}
       data-nav-link="about"
+      aria-current={currentSection === 'about' ? 'true' : undefined}
     >
       Sobre Mí
     </a>
@@ -61,6 +63,7 @@ const {
         { 'active': currentSection === 'education' }
       ]}
       data-nav-link="education"
+      aria-current={currentSection === 'education' ? 'true' : undefined}
     >
       Formación
     </a>
@@ -71,6 +74,7 @@ const {
         { 'active': currentSection === 'contact' }
       ]}
       data-nav-link="contact"
+      aria-current={currentSection === 'contact' ? 'true' : undefined}
     >
       Contacto
     </a>
@@ -82,10 +86,16 @@ const {
   document.addEventListener('section-changed', ((event: CustomEvent) => {
     const { section } = event.detail;
 
-    // Update active nav link
+    // Update active nav link and aria-current
     document.querySelectorAll('[data-nav-link]').forEach(link => {
       const linkSection = (link as HTMLElement).dataset.navLink;
-      link.classList.toggle('active', linkSection === section);
+      const isActive = linkSection === section;
+      link.classList.toggle('active', isActive);
+      if (isActive) {
+        link.setAttribute('aria-current', 'true');
+      } else {
+        link.removeAttribute('aria-current');
+      }
     });
   }) as EventListener);
 
@@ -114,7 +124,11 @@ const {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 40px;
+    padding: clamp(14px, 2vw, 24px) clamp(16px, 4vw, 40px);
+    padding-top: max(clamp(14px, 2vw, 24px), env(safe-area-inset-top));
+    padding-left: max(clamp(16px, 4vw, 40px), env(safe-area-inset-left));
+    padding-right: max(clamp(16px, 4vw, 40px), env(safe-area-inset-right));
+    gap: 12px;
     z-index: 100;
     background: linear-gradient(
       to bottom,
@@ -141,7 +155,7 @@ const {
 
   .portfolio-header__name {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: clamp(0.95rem, 2.2vw, 1.25rem);
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -179,18 +193,23 @@ const {
 
   .portfolio-header__nav {
     display: flex;
-    gap: 32px;
+    gap: clamp(10px, 2.5vw, 32px);
     pointer-events: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .portfolio-header__link {
     position: relative;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.875rem;
+    font-size: clamp(0.78rem, 1.6vw, 0.875rem);
     font-weight: 500;
     letter-spacing: 0.02em;
     text-decoration: none;
-    padding: 4px 0;
+    padding: 8px 4px; /* tap target ampliado */
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
     transition: color 0.2s ease;
   }
 

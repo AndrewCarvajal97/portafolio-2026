@@ -49,6 +49,10 @@ jobs:
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages on the repo if it's not enabled yet.
+          # Avoids the chicken-and-egg "Get Pages site failed" error.
+          enablement: true
 
       - name: Build with Astro
         run: pnpm run build

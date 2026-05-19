@@ -150,60 +150,37 @@ export class Carousel {
    * Handle click/tap to select project
    */
   onClick(clientX: number, clientY: number, width: number, height: number): void {
-    console.log('Carousel.onClick called - isAnimating:', this.state.isAnimating);
+    if (this.state.isAnimating) return;
 
-    // Only check isAnimating - InputController handles drag detection
-    if (this.state.isAnimating) {
-      console.log('Carousel.onClick blocked - animating');
-      return;
-    }
-
-    // Convert to normalized device coordinates
     this.mouse.x = (clientX / width) * 2 - 1;
     this.mouse.y = -(clientY / height) * 2 + 1;
 
-    console.log('Mouse NDC:', this.mouse.x, this.mouse.y);
-
-    // Raycast - use recursive to also check children
     this.raycaster.setFromCamera(this.mouse, this.sceneManager.getCamera());
     const intersects = this.raycaster.intersectObjects(this.group.children, true);
 
-    console.log('Raycast intersects:', intersects.length);
-
     if (intersects.length > 0) {
-      // Find the card mesh that has project data
       let targetObject: THREE.Object3D | null = intersects[0].object;
 
-      // Walk up the hierarchy to find the mesh with userData.id (project identifier)
       while (targetObject && !targetObject.userData?.id) {
         targetObject = targetObject.parent;
       }
 
-      // If we didn't find it walking up, the intersected object might be the card itself
       if (!targetObject || !targetObject.userData?.id) {
         targetObject = intersects[0].object;
       }
 
-      console.log('Target object userData:', targetObject?.userData);
-
-      // Verify it has project data (check for id which all projects have)
       if (targetObject && targetObject.userData && targetObject.userData.id) {
         this.focusOnProject(targetObject as THREE.Mesh);
       } else {
-        console.log('No valid project data on clicked object. Looking for card in hierarchy...');
-        // Last resort: find which card was clicked by checking all cards
         const clickedCard = this.cards.find(card => {
           const cardMesh = card.getMesh();
           return cardMesh === intersects[0].object ||
                  cardMesh.children.includes(intersects[0].object as THREE.Object3D);
         });
         if (clickedCard) {
-          console.log('Found card by hierarchy search:', clickedCard.getProject().title);
           this.focusOnProject(clickedCard.getMesh());
         }
       }
-    } else {
-      console.log('No intersections found. Group children count:', this.group.children.length);
     }
   }
 
@@ -268,9 +245,6 @@ export class Carousel {
     const camera = this.sceneManager.getCamera();
     const project = mesh.userData as Project;
 
-    console.log('Focusing on project:', project.title);
-
-    // Dim all other cards and highlight the selected one
     this.cards.forEach(card => {
       if (card.getMesh() === mesh) {
         card.setSelected(true);
@@ -279,35 +253,24 @@ export class Carousel {
       }
     });
 
-    // Get the world position of the mesh (accounting for group rotation)
     const meshWorldPos = new THREE.Vector3();
     mesh.getWorldPosition(meshWorldPos);
 
-    console.log('Mesh world position:', meshWorldPos);
-
-    // Calculate camera position - move to view the card from a good angle
-    // Position camera to put card on the left side of screen
     const direction = meshWorldPos.clone().normalize();
     const targetPosition = new THREE.Vector3(
-      meshWorldPos.x - direction.x * 2 - 2,  // Left of the card
-      meshWorldPos.y + 0.3,                   // Slightly above
-      meshWorldPos.z - direction.z * 2 + 4   // In front
+      meshWorldPos.x - direction.x * 2 - 2,
+      meshWorldPos.y + 0.3,
+      meshWorldPos.z - direction.z * 2 + 4
     );
 
-    // Look directly at the card
     const lookAtTarget = meshWorldPos.clone();
 
-    console.log('Camera target position:', targetPosition);
-    console.log('Look at target:', lookAtTarget);
-
-    // Emit event IMMEDIATELY so UI can update
     this.emit({
       type: 'projectSelect',
       project,
       mesh
     });
 
-    // Animate camera position
     const cameraTween = new Tween(camera.position)
       .to(
         {
@@ -323,17 +286,13 @@ export class Carousel {
       })
       .onComplete(() => {
         this.state.isAnimating = false;
-        console.log('Camera animation complete');
       })
       .start();
 
     this.activeTweens.push(cameraTween);
-    console.log('Camera tween started');
 
-    // Safety timeout: if tween doesn't complete in expected time, reset isAnimating
     setTimeout(() => {
       if (this.state.isAnimating && this.state.activeProject === mesh) {
-        console.log('Safety timeout: resetting isAnimating');
         this.state.isAnimating = false;
       }
     }, ANIMATION_DURATION.cameraFocus + 500);
@@ -343,24 +302,18 @@ export class Carousel {
    * Reset camera to original position
    */
   resetView(): void {
-    console.log('resetView called, activeProject:', this.state.activeProject ? 'yes' : 'no');
-
     if (!this.state.activeProject) return;
 
     const previousProject = this.state.activeProject.userData as Project;
 
-    // Clear active project and isAnimating IMMEDIATELY so new clicks work
     this.state.activeProject = null;
-    // Don't set isAnimating to true here - allow immediate interaction
     this.state.isAnimating = false;
 
-    // Reset all cards to normal state
     this.cards.forEach(card => {
       card.setSelected(false);
       card.setDimmed(false);
     });
 
-    // Emit deselect event IMMEDIATELY
     this.emit({
       type: 'projectDeselect',
       project: previousProject
@@ -369,10 +322,8 @@ export class Carousel {
     const camera = this.sceneManager.getCamera();
     const centerTarget = new THREE.Vector3(0, 0, 0);
 
-    // Get responsive camera position for reset
     const responsiveCameraConfig = getResponsiveCameraConfig();
 
-    // Animate camera back to original position
     const cameraTween = new Tween(camera.position)
       .to(
         {
@@ -386,13 +337,9 @@ export class Carousel {
       .onUpdate(() => {
         camera.lookAt(centerTarget);
       })
-      .onComplete(() => {
-        console.log('Camera reset animation complete');
-      })
       .start();
 
     this.activeTweens.push(cameraTween);
-    console.log('Reset view started, isAnimating:', this.state.isAnimating);
   }
 
   /**
@@ -435,6 +382,56 @@ export class Carousel {
    */
   getCards(): ProjectCard[] {
     return this.cards;
+  }
+
+  /**
+   * Get the index of the card currently facing the camera
+   */
+  getCurrentIndex(): number {
+    if (this.cards.length === 0) return 0;
+    const anglePerCard = (2 * Math.PI) / this.cards.length;
+    const normalizedRotation = ((this.state.currentRotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    return Math.round(normalizedRotation / anglePerCard) % this.cards.length;
+  }
+
+  /**
+   * Navigate to the next project card
+   */
+  next(): void {
+    if (this.state.activeProject || this.state.isAnimating) return;
+    const anglePerCard = (2 * Math.PI) / this.cards.length;
+    this.state.targetRotation += anglePerCard;
+  }
+
+  /**
+   * Navigate to the previous project card
+   */
+  prev(): void {
+    if (this.state.activeProject || this.state.isAnimating) return;
+    const anglePerCard = (2 * Math.PI) / this.cards.length;
+    this.state.targetRotation -= anglePerCard;
+  }
+
+  /**
+   * Select the project card currently facing the camera
+   */
+  selectCurrentProject(): void {
+    if (this.state.activeProject || this.state.isAnimating) return;
+    const index = this.getCurrentIndex();
+    if (index >= 0 && index < this.cards.length) {
+      this.focusOnProject(this.cards[index].getMesh());
+    }
+  }
+
+  /**
+   * Get the project at the current front-facing index
+   */
+  getCurrentProject(): Project | null {
+    const index = this.getCurrentIndex();
+    if (index >= 0 && index < this.cards.length) {
+      return this.cards[index].getProject();
+    }
+    return null;
   }
 
   /**

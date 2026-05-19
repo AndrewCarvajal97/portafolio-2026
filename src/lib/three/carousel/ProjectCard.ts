@@ -53,7 +53,19 @@ export class ProjectCard {
   }
 
   /**
-   * Create the main card mesh
+   * Create the main card mesh.
+   *
+   * To avoid Three.js' DoubleSide texture-mirroring artifact (cards behind the
+   * camera show their texture horizontally flipped), each card is made of TWO
+   * planes sharing the same geometry and material:
+   *
+   *   - The main mesh: front face pointing in its local +Z (after lookAt, this
+   *     ends up facing the cylinder center).
+   *   - A child mesh rotated 180° around Y: front face points the opposite way.
+   *
+   * Both planes use FrontSide. The GPU back-face-culls whichever one is
+   * pointing away from the camera, so exactly one is visible at any angle and
+   * the texture is always rendered with correct U-axis orientation.
    */
   private createMesh(): THREE.Mesh {
     const geometry = new THREE.PlaneGeometry(
@@ -63,17 +75,29 @@ export class ProjectCard {
       1
     );
 
-    // Create material - white base color so textures show correctly
+    // Create material - white base color so textures show correctly.
+    // `FrontSide` (the default) is critical here — DoubleSide would re-introduce
+    // the mirroring artifact on the "back" plane.
     const material = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
       emissive: new THREE.Color(this.project.color),
       emissiveIntensity: 0.05,
       roughness: 0.5,
       metalness: 0.1
     });
 
-    return new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    // Mirror sibling: shares geometry + material (essentially free memory-wise),
+    // rotated 180° around Y so its front face points opposite to the main mesh.
+    // This means: from any camera angle, one of the two planes is front-facing
+    // (visible, texture correct) and the other is back-facing (culled).
+    const backMesh = new THREE.Mesh(geometry, material);
+    backMesh.rotation.y = Math.PI;
+    mesh.add(backMesh);
+
+    return mesh;
   }
 
   /**

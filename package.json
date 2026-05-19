@@ -21,6 +21,7 @@
     "preinstall": "npx --yes only-allow pnpm"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@tweenjs/tween.js": "^25.0.0",
     "astro": "^5.16.15",
     "gsap": "^3.14.2",

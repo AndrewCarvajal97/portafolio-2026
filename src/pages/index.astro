@@ -16,6 +16,7 @@ import AboutSection from '../components/portfolio/AboutSection.astro';
 import EducationSection from '../components/portfolio/EducationSection.astro';
 import ContactSection from '../components/portfolio/ContactSection.astro';
 import SectionTitle from '../components/portfolio/SectionTitle.astro';
+import { projects } from '../data/projects';
 ---
 
 <Layout>
@@ -67,8 +68,26 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
     <!-- Project Expanded View (full-screen overlay) -->
     <ProjectExpanded />
 
+    <!-- Crawlable project content for search engines -->
+    <div class="sr-only">
+      {projects.map((project) => (
+        <article>
+          <h3>{project.title}</h3>
+          {project.role && <p>{project.role}</p>}
+          <p>{project.longDescription || project.description}</p>
+          <p>Tecnologías: {project.tags.join(', ')}</p>
+          {project.links && project.links.map((link) => (
+            <a href={link.url}>{link.label || link.type}: {project.title}</a>
+          ))}
+        </article>
+      ))}
+    </div>
+
+    <!-- Live region for section announcements -->
+    <div id="section-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <!-- Background gradient effects (fixed) -->
-    <div class="portfolio__background">
+    <div class="portfolio__background" aria-hidden="true">
       <div class="portfolio__gradient portfolio__gradient--primary"></div>
       <div class="portfolio__gradient portfolio__gradient--secondary"></div>
     </div>
@@ -189,6 +208,18 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
         link.classList.toggle('active', linkSection === section);
       });
 
+      // Announce section change for screen readers
+      const announcer = document.getElementById('section-announcer');
+      if (announcer) {
+        const sectionNames: Record<string, string> = {
+          projects: 'Proyectos',
+          about: 'Sobre Mí',
+          education: 'Formación',
+          contact: 'Contacto'
+        };
+        announcer.textContent = `Sección actual: ${sectionNames[section] || section}`;
+      }
+
       // Dispatch event for other components
       document.dispatchEvent(new CustomEvent('section-changed', {
         detail: { section }
@@ -215,7 +246,8 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
   .portfolio {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100vh;          /* fallback for older browsers */
+    height: 100dvh;         /* dynamic vh — no jump when mobile address bar shows/hides */
     overflow: hidden;
     background: var(--background-primary, #0a0a0c);
   }
@@ -225,11 +257,13 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
     position: relative;
     width: 100%;
     height: 100vh;
+    height: 100dvh;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
     z-index: 1;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain; /* prevent pull-to-refresh ghost on iOS */
   }
 
   /* Hide scrollbar but keep functionality */
@@ -255,12 +289,15 @@ import SectionTitle from '../components/portfolio/SectionTitle.astro';
     position: relative;
     width: 100%;
     min-height: 100vh;
+    min-height: 100dvh;
     scroll-snap-align: start;
+    scroll-margin-top: 80px;
   }
 
   /* Projects section - full viewport with carousel */
   .portfolio__section--projects {
     height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;

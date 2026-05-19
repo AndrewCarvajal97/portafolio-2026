@@ -99,9 +99,9 @@ const stats = [
 
           <div class="bcard__grid-pattern" aria-hidden="true"></div>
 
-          <header class="bcard__back-header">
+          <div class="bcard__back-header">
             <h3 class="bcard__back-title">Habilidades</h3>
-          </header>
+          </div>
 
           <div class="bcard__skills">
             {
@@ -227,12 +227,13 @@ const stats = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 80px 24px 60px;
+    justify-content: flex-start; /* contenido pegado al top, no centrado vertical */
+    padding: clamp(24px, 3.5vh, 48px) 24px clamp(28px, 4vh, 56px);
     min-height: 100vh;
+    min-height: 100dvh;
     z-index: 2;
     background: transparent;
-    gap: 40px;
+    gap: clamp(16px, 2.5vh, 24px);
   }
 
   .about-section__title {
@@ -285,6 +286,16 @@ const stats = [
     border-radius: 28px;
     border: 2px solid var(--accent-color, #00d4ff);
     pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    .bcard:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 4px;
+    }
+    .bcard:focus-visible::after {
+      display: none;
+    }
   }
 
   /* INNER — 180° flip with easing */
@@ -590,43 +601,57 @@ const stats = [
   /* Mobile */
   @media (max-width: 640px) {
     .about-section {
-      padding: 80px 16px 40px;
-      gap: 24px;
+      padding: 72px 14px 32px;
+      gap: 20px;
     }
 
     .about-section__stage {
       max-width: 100%;
+      perspective: 900px; /* perspective reducida para evitar deformaciones extremas */
     }
 
     .bcard {
-      min-height: 560px;
+      min-height: clamp(440px, 78vh, 600px); /* se adapta al alto del viewport */
     }
 
     .bcard__face {
-      padding: 28px 22px;
+      padding: 24px 20px;
     }
 
     .bcard__photo {
-      width: 76px;
-      height: 76px;
+      width: 72px;
+      height: 72px;
     }
 
     .bcard__photo-initials {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
+    }
+
+    .bcard__intro {
+      gap: 10px;
     }
 
     .bcard__intro p {
-      font-size: 0.875rem;
+      font-size: clamp(0.82rem, 3.4vw, 0.9rem);
+      line-height: 1.55;
     }
 
     .bcard__stats {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(4, 1fr); /* mantenemos 4 columnas en horizontal con valores compactos */
       gap: 6px;
-      padding-top: 16px;
+      padding-top: 14px;
+    }
+
+    .bcard__stat {
+      padding: 8px 2px;
     }
 
     .bcard__stat-value {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+    }
+
+    .bcard__stat-label {
+      font-size: 0.55rem;
     }
 
     .bcard__skills {
@@ -635,9 +660,26 @@ const stats = [
     }
 
     .bcard__flip-hint {
-      bottom: 16px;
-      right: 22px;
+      bottom: 14px;
+      right: 18px;
       font-size: 0.65rem;
+    }
+  }
+
+  /* Móvil pequeño (360px y menos) */
+  @media (max-width: 380px) {
+    .bcard__face {
+      padding: 20px 16px;
+    }
+
+    .bcard__stats {
+      grid-template-columns: repeat(2, 1fr); /* en muy pequeñito sí pasamos a 2x2 */
+    }
+
+    .bcard__flip-hint {
+      position: static;
+      margin-top: 12px;
+      justify-content: center;
     }
   }
 

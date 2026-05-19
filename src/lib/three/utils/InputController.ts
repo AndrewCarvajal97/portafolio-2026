@@ -220,13 +220,36 @@ export class InputController {
         }
         break;
       case 'ArrowLeft':
-        // Could implement carousel navigation
+        event.preventDefault();
+        this.carousel.prev();
+        this.announceCurrentProject();
         break;
       case 'ArrowRight':
-        // Could implement carousel navigation
+        event.preventDefault();
+        this.carousel.next();
+        this.announceCurrentProject();
+        break;
+      case 'Enter':
+      case ' ':
+        if (document.activeElement === this.container || this.container.contains(document.activeElement)) {
+          event.preventDefault();
+          this.carousel.selectCurrentProject();
+        }
         break;
     }
   };
+
+  private announceCurrentProject(): void {
+    const announcer = document.getElementById('carousel-announcer');
+    if (!announcer) return;
+    // Delay slightly to allow rotation to settle
+    setTimeout(() => {
+      const project = this.carousel.getCurrentProject();
+      if (project) {
+        announcer.textContent = `Proyecto: ${project.title}`;
+      }
+    }, 100);
+  }
 
   /**
    * Dispose of all event listeners
