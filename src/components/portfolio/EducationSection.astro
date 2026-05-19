@@ -14,6 +14,28 @@ const { class: className = '' } = Astro.props;
 
 const education = [
   {
+    id: 'fullstackopen',
+    institution: 'University of Helsinki — Full Stack Open',
+    degree: 'Programa Full-Stack moderno',
+    period: '2025 - 2026',
+    location: 'Online · Edición en español',
+    description: 'Programa oficial de la Universidad de Helsinki sobre desarrollo full-stack moderno: React, Redux, Node.js, Express, GraphQL, TypeScript, testing, CI/CD, contenedores y arquitecturas escalables.',
+    url: 'https://fullstackopen.com/es/',
+    icon: 'code',
+    color: '#3b82f6'
+  },
+  {
+    id: 'alura-inmersion-one',
+    institution: 'Alura Latam',
+    degree: 'Inmersión One LATAM',
+    period: '2026',
+    location: 'Online · LATAM',
+    description: 'Programa inmersivo de programación y desarrollo full-stack con enfoque en proyectos prácticos, mentorías y comunidad. Continuidad del recorrido formativo iniciado en Oracle Next Education.',
+    url: 'https://app.aluracursos.com/imersao/inmersion-one-lad',
+    icon: 'code',
+    color: '#f97316'
+  },
+  {
     id: 'sena-tech',
     institution: 'SENA',
     degree: 'Tecnólogo en Análisis y Desarrollo de Software',
@@ -220,9 +242,18 @@ const certifications = [
               </div>
               
               <h3 class="timeline__degree">{edu.degree}</h3>
-              <h4 class="timeline__institution">{edu.institution}</h4>
+              <h4 class="timeline__institution">
+                {('url' in edu && edu.url) ? (
+                  <a href={edu.url} target="_blank" rel="noopener noreferrer" class="timeline__institution-link">
+                    {edu.institution}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M7 17L17 7M7 7h10v10"/>
+                    </svg>
+                  </a>
+                ) : edu.institution}
+              </h4>
               <p class="timeline__description">{edu.description}</p>
-              
+
               <div class="timeline__card-glow"></div>
             </div>
           </div>
@@ -902,6 +933,31 @@ const certifications = [
     margin: 0 0 14px 0;
     color: var(--item-color, #00d4ff);
     opacity: 0.9;
+  }
+
+  .timeline__institution-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .timeline__institution-link:hover {
+    opacity: 1;
+    border-bottom-color: currentColor;
+  }
+
+  .timeline__institution-link svg {
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+  }
+
+  .timeline__institution-link:hover svg {
+    transform: translate(2px, -2px);
+    opacity: 1;
   }
 
   .timeline__description {

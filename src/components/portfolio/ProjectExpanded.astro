@@ -2,8 +2,9 @@
 /**
  * ProjectExpanded Component
  *
- * Full-screen expanded view when a project is selected.
- * Shows large image on the left and project info on the right.
+ * Full-screen modal when a project is selected. Two-row layout:
+ *   Row 1 (hero) — image card + summary info aside
+ *   Row 2 (insights) — Retos / Experiencia adquirida in two columns
  * The carousel fades out with blur when this view is active.
  */
 
@@ -15,46 +16,74 @@ const { class: className = '' } = Astro.props;
 ---
 
 <div id="project-expanded" class:list={['project-expanded', className]}>
-  <!-- Large project image -->
-  <div class="project-expanded__image-container">
-    <div class="project-expanded__image-wrapper">
-      <img id="expanded-image" class="project-expanded__image" src="" alt="" />
-      <div class="project-expanded__image-overlay"></div>
-    </div>
-  </div>
+  <button id="expanded-close-btn" class="project-expanded__back" type="button" aria-label="Volver al carrusel">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"></path>
+    </svg>
+    <span>Volver al carrusel</span>
+  </button>
 
-  <!-- Project info panel -->
-  <aside class="project-expanded__info">
-    <div class="project-expanded__content">
-      <header class="project-expanded__header">
-        <span class="project-expanded__year" id="expanded-year"></span>
-        <h2 class="project-expanded__title" id="expanded-title">Título del Proyecto</h2>
-        <span class="project-expanded__role" id="expanded-role"></span>
+  <div class="project-expanded__scroll">
+    <div class="project-expanded__inner">
+
+      <header class="project-expanded__hero">
+        <figure class="project-expanded__media">
+          <img id="expanded-image-backdrop" class="project-expanded__image-backdrop" src="" alt="" aria-hidden="true" />
+          <img id="expanded-image" class="project-expanded__image" src="" alt="" />
+          <span class="project-expanded__media-glow" aria-hidden="true"></span>
+        </figure>
+
+        <div class="project-expanded__summary">
+          <span class="project-expanded__role" id="expanded-role"></span>
+          <span class="project-expanded__year" id="expanded-year" hidden></span>
+          <h2 class="project-expanded__title" id="expanded-title">Título del proyecto</h2>
+
+          <div class="project-expanded__tags" id="expanded-tags"></div>
+
+          <p class="project-expanded__description" id="expanded-desc">
+            Descripción del proyecto...
+          </p>
+
+          <div class="project-expanded__links" id="expanded-links"></div>
+        </div>
       </header>
 
-      <div class="project-expanded__tags" id="expanded-tags"></div>
+      <section class="project-expanded__insights">
+        <article class="project-expanded__section" id="expanded-challenges-section" hidden>
+          <header class="project-expanded__section-header">
+            <span class="project-expanded__section-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </span>
+            <div>
+              <span class="project-expanded__section-eyebrow">Lo difícil</span>
+              <h3 class="project-expanded__section-title">Retos</h3>
+            </div>
+          </header>
+          <ul class="project-expanded__list" id="expanded-challenges"></ul>
+        </article>
 
-      <p class="project-expanded__description" id="expanded-desc">
-        Descripción del proyecto...
-      </p>
+        <article class="project-expanded__section" id="expanded-experience-section" hidden>
+          <header class="project-expanded__section-header">
+            <span class="project-expanded__section-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+              </svg>
+            </span>
+            <div>
+              <span class="project-expanded__section-eyebrow">Lo que me llevo</span>
+              <h3 class="project-expanded__section-title">Experiencia adquirida</h3>
+            </div>
+          </header>
+          <ul class="project-expanded__list" id="expanded-experience"></ul>
+        </article>
+      </section>
 
-      <div class="project-expanded__links" id="expanded-links"></div>
-
-      <button id="expanded-close-btn" class="project-expanded__close" type="button">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M19 12H5M12 19l-7-7 7-7"></path>
-        </svg>
-        <span>Volver al Carrusel</span>
-      </button>
     </div>
-  </aside>
+  </div>
 </div>
 
 <script>
@@ -63,6 +92,8 @@ const { class: className = '' } = Astro.props;
   class ProjectExpandedController {
     private container: HTMLElement | null;
     private imageEl: HTMLImageElement | null;
+    private backdropEl: HTMLImageElement | null;
+    private mediaEl: HTMLElement | null;
     private titleEl: HTMLElement | null;
     private descEl: HTMLElement | null;
     private tagsEl: HTMLElement | null;
@@ -71,10 +102,17 @@ const { class: className = '' } = Astro.props;
     private roleEl: HTMLElement | null;
     private closeBtn: HTMLElement | null;
     private carouselContainer: HTMLElement | null;
+    private challengesEl: HTMLElement | null;
+    private challengesSection: HTMLElement | null;
+    private experienceEl: HTMLElement | null;
+    private experienceSection: HTMLElement | null;
+    private scrollEl: HTMLElement | null;
 
     constructor() {
       this.container = document.getElementById('project-expanded');
       this.imageEl = document.getElementById('expanded-image') as HTMLImageElement;
+      this.backdropEl = document.getElementById('expanded-image-backdrop') as HTMLImageElement;
+      this.mediaEl = this.container?.querySelector('.project-expanded__media') as HTMLElement | null;
       this.titleEl = document.getElementById('expanded-title');
       this.descEl = document.getElementById('expanded-desc');
       this.tagsEl = document.getElementById('expanded-tags');
@@ -83,6 +121,11 @@ const { class: className = '' } = Astro.props;
       this.roleEl = document.getElementById('expanded-role');
       this.closeBtn = document.getElementById('expanded-close-btn');
       this.carouselContainer = document.getElementById('carousel-container');
+      this.challengesEl = document.getElementById('expanded-challenges');
+      this.challengesSection = document.getElementById('expanded-challenges-section');
+      this.experienceEl = document.getElementById('expanded-experience');
+      this.experienceSection = document.getElementById('expanded-experience-section');
+      this.scrollEl = this.container?.querySelector('.project-expanded__scroll') ?? null;
 
       if (this.container && this.imageEl) {
         this.setupEventListeners();
@@ -91,7 +134,6 @@ const { class: className = '' } = Astro.props;
     }
 
     private setupEventListeners(): void {
-      // Listen for project selection
       document.addEventListener('project-selected', ((event: CustomEvent) => {
         const { project } = event.detail;
         if (project) {
@@ -99,12 +141,10 @@ const { class: className = '' } = Astro.props;
         }
       }) as EventListener);
 
-      // Listen for project deselection
       document.addEventListener('project-deselected', () => {
         this.hide();
       });
 
-      // Close button
       if (this.closeBtn) {
         this.closeBtn.addEventListener('click', () => {
           if ((window as any).resetCarouselView) {
@@ -113,7 +153,6 @@ const { class: className = '' } = Astro.props;
         });
       }
 
-      // Escape key
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && this.container?.classList.contains('active')) {
           if ((window as any).resetCarouselView) {
@@ -126,37 +165,52 @@ const { class: className = '' } = Astro.props;
     private show(project: Project): void {
       if (!this.container || !this.imageEl) return;
 
-      console.log('Showing expanded view for:', project.title);
+      // Reset orientation state before swapping src
+      this.mediaEl?.classList.remove('is-portrait', 'is-landscape');
 
-      // Update image
       this.imageEl.src = project.image;
       this.imageEl.alt = project.title;
 
-      // Update content
+      // Mirror the image into the backdrop element
+      if (this.backdropEl) {
+        this.backdropEl.src = project.image;
+      }
+
+      // Detect orientation once the image is loaded so we can adapt the layout
+      const detectOrientation = () => {
+        if (!this.imageEl || !this.mediaEl) return;
+        const isPortrait = this.imageEl.naturalHeight > this.imageEl.naturalWidth;
+        this.mediaEl.classList.toggle('is-portrait', isPortrait);
+        this.mediaEl.classList.toggle('is-landscape', !isPortrait);
+      };
+
+      if (this.imageEl.complete && this.imageEl.naturalWidth > 0) {
+        detectOrientation();
+      } else {
+        this.imageEl.addEventListener('load', detectOrientation, { once: true });
+      }
+
       if (this.titleEl) this.titleEl.textContent = project.title;
       if (this.descEl) this.descEl.textContent = project.longDescription || project.description;
 
-      // Year
       if (this.yearEl) {
         if (project.year) {
           this.yearEl.textContent = project.year.toString();
-          this.yearEl.style.display = 'block';
+          this.yearEl.hidden = false;
         } else {
-          this.yearEl.style.display = 'none';
+          this.yearEl.hidden = true;
         }
       }
 
-      // Role
       if (this.roleEl) {
         if (project.role) {
           this.roleEl.textContent = project.role;
-          this.roleEl.style.display = 'block';
+          this.roleEl.style.display = 'inline-flex';
         } else {
           this.roleEl.style.display = 'none';
         }
       }
 
-      // Tags
       if (this.tagsEl) {
         this.tagsEl.innerHTML = '';
         project.tags.forEach((tag) => {
@@ -167,7 +221,9 @@ const { class: className = '' } = Astro.props;
         });
       }
 
-      // Links
+      this.renderList(this.challengesEl, this.challengesSection, project.challenges);
+      this.renderList(this.experienceEl, this.experienceSection, project.experience);
+
       if (this.linksEl) {
         this.linksEl.innerHTML = '';
         if (project.links && project.links.length > 0) {
@@ -177,20 +233,27 @@ const { class: className = '' } = Astro.props;
             a.target = '_blank';
             a.rel = 'noopener noreferrer';
             a.className = `link link--${link.type}`;
-            a.innerHTML = this.getLinkIcon(link.type) + (link.label || this.getLinkLabel(link.type));
+            a.innerHTML = this.getLinkIcon(link.type) + `<span>${link.label || this.getLinkLabel(link.type)}</span>`;
             this.linksEl!.appendChild(a);
           });
         }
       }
 
-      // Apply color accent from project
-      if (project.color) {
-        this.container.style.setProperty('--project-color', project.color);
+      if (typeof project.color === 'number') {
+        const hex = '#' + project.color.toString(16).padStart(6, '0');
+        const r = (project.color >> 16) & 255;
+        const g = (project.color >> 8) & 255;
+        const b = project.color & 255;
+        this.container.style.setProperty('--project-color', hex);
+        this.container.style.setProperty('--project-color-rgb', `${r}, ${g}, ${b}`);
       }
 
-      // Show expanded view and blur carousel
       this.container.classList.add('active');
       this.carouselContainer?.classList.add('blurred');
+
+      if (this.scrollEl) {
+        this.scrollEl.scrollTop = 0;
+      }
     }
 
     private hide(): void {
@@ -200,28 +263,47 @@ const { class: className = '' } = Astro.props;
       this.carouselContainer?.classList.remove('blurred');
     }
 
+    private renderList(
+      listEl: HTMLElement | null,
+      sectionEl: HTMLElement | null,
+      items: string[] | undefined
+    ): void {
+      if (!listEl || !sectionEl) return;
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        sectionEl.hidden = true;
+        return;
+      }
+      sectionEl.hidden = false;
+      items.forEach((text) => {
+        const li = document.createElement('li');
+        li.className = 'project-expanded__list-item';
+        li.textContent = text;
+        listEl.appendChild(li);
+      });
+    }
+
     private getLinkIcon(type: string): string {
       const icons: Record<string, string> = {
         github: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`,
-        live: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`,
-        demo: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
-        documentation: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`
+        live: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`,
+        demo: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
+        documentation: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`
       };
       return icons[type] || '';
     }
 
     private getLinkLabel(type: string): string {
       const labels: Record<string, string> = {
-        github: 'Ver Código',
-        live: 'Ver Proyecto',
-        demo: 'Ver Demo',
+        github: 'Ver código',
+        live: 'Ver proyecto',
+        demo: 'Ver demo',
         documentation: 'Documentación'
       };
       return labels[type] || 'Ver';
     }
   }
 
-  // Initialize when DOM is ready
   function init() {
     new ProjectExpandedController();
   }
@@ -238,12 +320,15 @@ const { class: className = '' } = Astro.props;
     position: fixed;
     inset: 0;
     z-index: 300;
-    display: grid;
-    grid-template-columns: 1fr 450px;
+    background: radial-gradient(circle at top, rgba(var(--project-color-rgb, 0, 212, 255), 0.08) 0%, rgba(5, 5, 10, 0.97) 60%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+    --project-color: #00d4ff;
+    --project-color-rgb: 0, 212, 255;
   }
 
   .project-expanded.active {
@@ -252,280 +337,436 @@ const { class: className = '' } = Astro.props;
     pointer-events: auto;
   }
 
-  /* Image container - left side */
-  .project-expanded__image-container {
-    position: relative;
-    display: flex;
+  .project-expanded__back {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 20;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 60px;
-    background: rgba(5, 5, 10, 0.9);
-    overflow: hidden;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
   }
 
-  .project-expanded__image-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-width: 900px;
-    max-height: 80vh;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow:
-      0 50px 100px -20px rgba(0, 0, 0, 0.7),
-      0 0 60px rgba(var(--project-color-rgb, 0, 212, 255), 0.2);
-    transform: scale(0.9) translateX(-50px);
+  .project-expanded__back:hover {
+    background: rgba(var(--project-color-rgb), 0.18);
+    color: #fff;
+    border-color: rgba(var(--project-color-rgb), 0.4);
+    transform: translateX(-3px);
+  }
+
+  .project-expanded__back:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--project-color-rgb), 0.35);
+  }
+
+  .project-expanded__scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  .project-expanded__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 96px 48px 64px;
+    transform: translateY(24px);
     opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
   }
 
-  .project-expanded.active .project-expanded__image-wrapper {
-    transform: scale(1) translateX(0);
+  .project-expanded.active .project-expanded__inner {
+    transform: translateY(0);
     opacity: 1;
     transition-delay: 0.1s;
   }
 
-  .project-expanded__image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: rgba(0, 0, 0, 0.3);
+  /* HERO */
+  .project-expanded__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+    margin-bottom: 64px;
   }
 
-  .project-expanded__image-overlay {
+  .project-expanded__media {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 16 / 10;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #0a0a0c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 30px 60px -25px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(var(--project-color-rgb), 0.15),
+      0 0 80px -20px rgba(var(--project-color-rgb), 0.4);
+    isolation: isolate;
+  }
+
+  /* Backdrop — copy of the image, scaled up + blurred + dimmed.
+     Fills the container so portrait/landscape mismatches don't show empty bars. */
+  .project-expanded__image-backdrop {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      135deg,
-      transparent 0%,
-      rgba(var(--project-color-rgb, 0, 212, 255), 0.1) 100%
-    );
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(36px) brightness(0.5) saturate(1.4);
+    transform: scale(1.15);
+    z-index: 0;
     pointer-events: none;
   }
 
-  /* Info panel - right side */
-  .project-expanded__info {
+  /* Main image — always shown whole (contain), so portrait shots aren't cropped. */
+  .project-expanded__image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Landscape images already fill the wide container; switch back to cover so
+     there are no faint backdrop edges showing around them. */
+  .project-expanded__media.is-landscape .project-expanded__image {
+    object-fit: cover;
+  }
+
+  /* Portrait images render at max ~70% width centered; the blurred backdrop
+     fills the rest of the wide container. */
+  .project-expanded__media.is-portrait .project-expanded__image {
+    object-fit: contain;
+    padding: 24px 0;
+  }
+
+  .project-expanded__media-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 50%,
+      rgba(var(--project-color-rgb), 0.12) 100%
+    );
+  }
+
+  .project-expanded__summary {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 60px 40px;
-    background: rgba(10, 10, 15, 0.98);
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    transform: translateX(100%);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .project-expanded.active .project-expanded__info {
-    transform: translateX(0);
-    transition-delay: 0.15s;
-  }
-
-  .project-expanded__content {
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    padding-right: 10px;
-  }
-
-  .project-expanded__header {
-    margin-bottom: 24px;
-  }
-
-  .project-expanded__year {
-    display: inline-block;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--project-color, var(--accent-color, #00d4ff));
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    padding: 4px 12px;
-    background: rgba(var(--project-color-rgb, 0, 212, 255), 0.15);
-    border-radius: 20px;
-  }
-
-  .project-expanded__title {
-    margin: 0 0 12px 0;
-    font-size: 2.25rem;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    gap: 16px;
   }
 
   .project-expanded__role {
-    display: block;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.6);
-    font-style: italic;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--project-color);
+    background: rgba(var(--project-color-rgb), 0.12);
+    border: 1px solid rgba(var(--project-color-rgb), 0.25);
+    border-radius: 999px;
+  }
+
+  .project-expanded__role::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--project-color);
+    box-shadow: 0 0 10px var(--project-color);
+  }
+
+  .project-expanded__year {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.1em;
+  }
+
+  .project-expanded__title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #ffffff;
   }
 
   .project-expanded__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 28px;
+    gap: 8px;
+    margin-top: 4px;
   }
 
   .project-expanded__tags :global(.tag) {
     display: inline-flex;
     align-items: center;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.85);
-    border-radius: 25px;
-    font-size: 0.8rem;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-size: 0.8125rem;
     font-weight: 500;
-    letter-spacing: 0.02em;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.01em;
     transition: all 0.2s ease;
   }
 
   .project-expanded__tags :global(.tag:hover) {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-2px);
+    background: rgba(var(--project-color-rgb), 0.12);
+    color: #fff;
+    border-color: rgba(var(--project-color-rgb), 0.3);
   }
 
   .project-expanded__description {
+    margin: 8px 0 0 0;
     font-size: 1.0625rem;
-    line-height: 1.8;
-    color: rgba(255, 255, 255, 0.75);
-    margin: 0 0 32px 0;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.78);
   }
 
   .project-expanded__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 40px;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .project-expanded__links :global(.link) {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 24px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: 13px 22px;
+    background: rgba(255, 255, 255, 0.04);
     color: #ffffff;
     text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
     font-size: 0.9375rem;
     font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    transition: all 0.25s ease;
+    transition: all 0.22s ease;
   }
 
   .project-expanded__links :global(.link:hover) {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.5);
   }
 
   .project-expanded__links :global(.link--live) {
-    background: linear-gradient(135deg, rgba(var(--project-color-rgb, 0, 212, 255), 0.2) 0%, rgba(var(--project-color-rgb, 0, 212, 255), 0.1) 100%);
-    border-color: rgba(var(--project-color-rgb, 0, 212, 255), 0.3);
+    background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.22), rgba(var(--project-color-rgb), 0.08));
+    border-color: rgba(var(--project-color-rgb), 0.4);
   }
 
   .project-expanded__links :global(.link--live:hover) {
-    background: linear-gradient(135deg, rgba(var(--project-color-rgb, 0, 212, 255), 0.35) 0%, rgba(var(--project-color-rgb, 0, 212, 255), 0.2) 100%);
+    background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.35), rgba(var(--project-color-rgb), 0.18));
+    border-color: rgba(var(--project-color-rgb), 0.6);
   }
 
-  .project-expanded__close {
+  /* INSIGHTS — Retos / Experiencia */
+  .project-expanded__insights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+  }
+
+  .project-expanded__section {
+    position: relative;
+    padding: 28px 30px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .project-expanded__section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--project-color), transparent);
+    opacity: 0.7;
+  }
+
+  .project-expanded__section[hidden] {
+    display: none;
+  }
+
+  .project-expanded__section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .project-expanded__section-icon {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 16px 28px;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 14px;
-    font-size: 0.9375rem;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(var(--project-color-rgb), 0.12);
+    color: var(--project-color);
+    border: 1px solid rgba(var(--project-color-rgb), 0.25);
+    flex-shrink: 0;
+  }
+
+  .project-expanded__section-eyebrow {
+    display: block;
+    font-size: 0.7rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: inherit;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 2px;
   }
 
-  .project-expanded__close:hover {
-    background: rgba(255, 255, 255, 0.08);
+  .project-expanded__section-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.35);
-    transform: translateX(-5px);
+    letter-spacing: -0.01em;
   }
 
-  .project-expanded__close:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(var(--project-color-rgb, 0, 212, 255), 0.4);
+  .project-expanded__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  /* Scrollbar styling */
-  .project-expanded__content::-webkit-scrollbar {
-    width: 5px;
+  .project-expanded__list-item {
+    position: relative;
+    padding: 14px 16px 14px 38px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    transition: all 0.2s ease;
   }
 
-  .project-expanded__content::-webkit-scrollbar-track {
+  .project-expanded__list-item:hover {
+    background: rgba(var(--project-color-rgb), 0.05);
+    border-color: rgba(var(--project-color-rgb), 0.18);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .project-expanded__list-item::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 22px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--project-color);
+    box-shadow: 0 0 12px rgba(var(--project-color-rgb), 0.6);
+  }
+
+  /* Scrollbar */
+  .project-expanded__scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .project-expanded__scroll::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .project-expanded__content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 3px;
+  .project-expanded__scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
   }
 
-  .project-expanded__content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
+  .project-expanded__scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--project-color-rgb), 0.4);
   }
 
-  /* Mobile adjustments */
+  /* Tablet */
   @media (max-width: 1024px) {
-    .project-expanded {
+    .project-expanded__inner {
+      padding: 88px 32px 56px;
+    }
+
+    .project-expanded__hero {
       grid-template-columns: 1fr;
-      grid-template-rows: 45vh 1fr;
+      gap: 32px;
+      margin-bottom: 48px;
     }
 
-    .project-expanded__image-container {
-      padding: 30px;
+    .project-expanded__media {
+      aspect-ratio: 16 / 9;
+      max-height: 50vh;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .project-expanded__back {
+      top: 16px;
+      left: 16px;
+      padding: 8px 14px;
+      font-size: 0.8125rem;
     }
 
-    .project-expanded__image-wrapper {
-      max-height: 100%;
+    .project-expanded__inner {
+      padding: 72px 20px 48px;
     }
 
-    .project-expanded__info {
-      padding: 30px 24px;
-      border-left: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      transform: translateY(100%);
-    }
-
-    .project-expanded.active .project-expanded__info {
-      transform: translateY(0);
+    .project-expanded__hero {
+      gap: 24px;
+      margin-bottom: 36px;
     }
 
     .project-expanded__title {
       font-size: 1.75rem;
     }
-  }
-
-  @media (max-width: 640px) {
-    .project-expanded {
-      grid-template-rows: 35vh 1fr;
-    }
-
-    .project-expanded__image-container {
-      padding: 20px;
-    }
-
-    .project-expanded__info {
-      padding: 24px 20px;
-    }
-
-    .project-expanded__title {
-      font-size: 1.5rem;
-    }
 
     .project-expanded__description {
       font-size: 0.9375rem;
+    }
+
+    .project-expanded__insights {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .project-expanded__section {
+      padding: 22px 22px;
+    }
+
+    .project-expanded__list-item {
+      font-size: 0.875rem;
     }
   }
 </style>

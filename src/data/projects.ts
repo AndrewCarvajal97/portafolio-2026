@@ -41,7 +41,7 @@ export const projects: Project[] = [
     longDescription: 'Full-Stack Developer en INCConnection. Construí la suite completa: el panel administrativo Classroom para gestión académica (cursos, secciones, asistencia, calificaciones, calendarios) y la aplicación de estudiantes con experiencia integrada de Google Workspace mediante Domain-Wide Delegation. Implementé Google Calendar, Meet y Drive sobre un backend NestJS modular, gestiono service accounts en Google Cloud y flujos OAuth seguros. Diseñé permisos por rol (admin, docente, estudiante) y un sistema de notificaciones que mantiene sincronizadas a las dos audiencias.',
     tags: ['NestJS', 'TypeScript', 'React', 'Google Workspace', 'OAuth 2.0', 'PostgreSQL'],
     color: 0x8844ff,
-    image: 'https://picsum.photos/seed/incconnection-suite/600/400',
+    image: '/innco-completo.png',
     links: [
       { type: 'live', url: 'https://dev.admin.innconection-plus.texelbit.com/classroom', label: 'Admin Classroom' },
       { type: 'live', url: 'https://dev.app.innconection.texelbit.com/', label: 'App Estudiantes' }
@@ -116,53 +116,53 @@ export const projects: Project[] = [
   {
     id: 'aia-rewards',
     title: 'AIA Rewards',
-    description: 'Programa de fidelización para clientes de restaurantes con puntos, niveles y recompensas canjeables.',
-    longDescription: 'Tech Leader del producto AIA Rewards: sistema de puntos, niveles (tiers), misiones y catálogo de recompensas canjeables integrado al checkout de restaurantes AIA. Implementé motor de reglas configurable por restaurante, expiración de puntos, prevención de fraude y reportes de retención. Integrado con la pasarela de pagos y con la app móvil para escaneo en POS.',
-    tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'Redis', 'Event Sourcing'],
+    description: 'Motor propio de rewards multi-proveedor con Strategy pattern: switch en runtime entre el sistema interno y proveedores externos.',
+    longDescription: 'Implementación mejorada del sistema de rewards que originalmente dependía exclusivamente del proveedor externo Catering Rewards. Le dio a AIA la libertad de ofrecer el servicio a sus clientes finales con configuraciones y control mucho más granular, manteniendo el proveedor externo como complemento para usuarios que ya contaban con él. La pieza clave es la aplicación del patrón Strategy: una interfaz común de RewardsProvider que permite intercambiar en tiempo de ejecución entre el proveedor interno mejorado y cualquier proveedor externo integrado, sin tocar el código consumidor (checkout, app móvil, dashboard). Incluye motor de reglas configurable por restaurante, niveles, expiración de puntos y detección de fraude.',
+    tags: ['NestJS', 'TypeScript', 'Strategy Pattern', 'PostgreSQL', 'Redis', 'Event Sourcing'],
     color: 0xffaa44,
-    image: '/AIA-Landing.png',
+    image: '/aia-rewards-points.png',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
     featured: true,
     role: 'Tech Leader & Full-Stack Developer',
     challenges: [
-      'Diseñar un ledger de puntos auditable y resistente a doble acreditación bajo concurrencia alta en checkout.',
-      'Permitir que cada restaurante personalice reglas (multiplicadores, productos elegibles, ventanas horarias) sin ramificar el código.',
-      'Detectar patrones de fraude (acumulación artificial, canje masivo) en tiempo real sin bloquear clientes legítimos.',
-      'Sincronizar el saldo entre POS, app móvil y back office con latencia sub-segundo.'
+      'Diseñar una abstracción de RewardsProvider lo suficientemente expresiva para cubrir el proveedor interno y externos sin filtrar particularidades de cada uno al cliente.',
+      'Permitir el switch de proveedor en runtime por usuario, restaurante o tenant, manteniendo el ledger de puntos consistente y auditable.',
+      'Llevar configuración y control granular al panel admin sin sacrificar performance ni romper la compatibilidad con el flujo del proveedor externo legacy.',
+      'Detectar y prevenir fraude (acumulación artificial, doble acreditación, canje masivo) en tiempo real con concurrencia alta en checkout.'
     ],
     experience: [
-      'Apliqué event sourcing y outbox pattern para mantener el historial inmutable de movimientos de puntos.',
-      'Aprendí a modelar motores de reglas tipo decision-tree configurables desde admin.',
-      'Profundicé en Redis para counters, locks distribuidos y caches de saldo con invalidación precisa.',
-      'Tomé decisiones de producto basadas en métricas de retención y LTV reales.'
+      'Apliqué el patrón Strategy a nivel de dominio productivo, dejando el código consumidor agnóstico al proveedor activo.',
+      'Profundicé en event sourcing y outbox pattern para mantener un historial inmutable y reproducible de movimientos de puntos.',
+      'Aprendí a diseñar motores de reglas tipo decision-tree configurables desde admin sin acoplar el motor a un proveedor específico.',
+      'Maduré decisiones de producto basadas en métricas reales de retención, LTV y costo por punto acreditado.'
     ]
   },
   {
     id: 'aia-catering-rewards',
     title: 'AIA Catering Rewards',
-    description: 'Programa de recompensas B2B para clientes corporativos de catering con cuentas multi-usuario.',
-    longDescription: 'Variante B2B del programa Rewards orientada a cuentas corporativas de catering. Modelé clientes-organización con múltiples solicitantes, presupuestos compartidos, aprobaciones jerárquicas y recompensas escalonadas por volumen anual. Se integra con la API de Catering Rewards externa y con el flujo de órdenes de la plataforma AIA.',
-    tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'B2B', 'Stripe Connect'],
+    description: 'Portal para clientes del ecosistema AIA: seguimiento de rewards, órdenes, premios, campañas y tracking en vivo de entregas con SSE.',
+    longDescription: 'Portal web que diseñé para los clientes finales del ecosistema AIA: les permite hacer seguimiento de sus rewards (puntos, niveles, historial), revisar sus órdenes y premios canjeados, explorar campañas activas y, sobre todo, hacer tracking de sus órdenes en tiempo real mediante Server-Sent Events. Apenas el driver confirma el pickup en el restaurante, el portal abre un canal SSE que empuja actualizaciones de estado y posición hasta la entrega, sin polling y manteniendo la latencia sub-segundo. Se integra con el motor de Rewards multi-proveedor, el sistema de cupones, el flujo de órdenes y el tracking GPS de drivers.',
+    tags: ['React', 'TypeScript', 'NestJS', 'SSE', 'Real-time', 'PostgreSQL'],
     color: 0xff8844,
-    image: '/AIA-Landing.png',
+    image: '/aia-rewards.png',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
     featured: true,
-    role: 'Tech Leader & Full-Stack Developer',
+    role: 'Full-Stack Developer',
     challenges: [
-      'Modelar cuentas corporativas multi-usuario con permisos por rol (solicitante, aprobador, admin) y trazabilidad por orden.',
-      'Calcular recompensas escalonadas por volumen anual recomputables ante devoluciones o ajustes tardíos.',
-      'Integrar con un proveedor externo de Catering Rewards manteniendo nuestro propio ledger como fuente de verdad.',
-      'Soportar facturación consolidada mensual con detalle por sucursal y centro de costos.'
+      'Sincronizar 4 dominios (rewards, órdenes, campañas, tracking) en una sola vista sin acoplar los servicios entre sí.',
+      'Abrir el canal SSE justo cuando el driver confirma pickup y sostenerlo hasta la entrega, reconectando ante pérdida de red sin perder eventos intermedios.',
+      'Mostrar la posición del driver en vivo en un mapa sin saturar la UI con re-renders ni romper la batería del cliente.',
+      'Mantener latencia sub-segundo entre evento de driver y actualización en el portal con cientos de órdenes simultáneas.'
     ],
     experience: [
-      'Aprendí a diseñar modelos B2B con jerarquías corporativas reales sin sobreingeniería.',
-      'Refiné integraciones bidireccionales con APIs externas mediante webhooks firmados y reconciliación nocturna.',
-      'Adquirí soltura en flujos de aprobación configurables por organización.',
-      'Maduré reportería ejecutiva: dashboards mensuales con cohortes y top performers.'
+      'Profundicé en Server-Sent Events productivos: heartbeats, reintentos exponenciales, `Last-Event-ID` para recuperación y backpressure por cliente.',
+      'Refiné una arquitectura event-driven donde múltiples microservicios publican y el portal consume un stream unificado por orden.',
+      'Aprendí a diseñar UIs en tiempo real sin saturar React: throttling, selectors granulares y componentes desacoplados por canal.',
+      'Adquirí experiencia midiendo y optimizando latencia end-to-end de eventos GPS hasta el render en el cliente.'
     ]
   },
   {
@@ -224,7 +224,7 @@ export const projects: Project[] = [
     longDescription: 'App móvil del ecosistema INCConnection que reúne en una sola experiencia los cursos del estudiante, calendario académico sincronizado con Google Calendar, links rápidos a sesiones Meet, control de asistencia y notificaciones de avisos académicos. Construida en React Native + Expo, consume el mismo backend NestJS de la suite web.',
     tags: ['React Native', 'Expo', 'TypeScript', 'Google Calendar', 'Push Notifications'],
     color: 0xaa66ff,
-    image: 'https://picsum.photos/seed/incconnection-mobile/600/400',
+    image: '/incconnection-mobile.png',
     links: [
       { type: 'live', url: 'https://dev.app.innconection.texelbit.com/' }
     ],
@@ -250,7 +250,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé un sistema de cupones y descuentos ad-hoc exclusivo del ecosistema AIA. Permite al equipo de marketing crear campañas con descuentos por porcentaje o monto fijo, cupones promocionales para clientes, códigos de uso único o multi-uso, vigencia temporal, restricciones por sucursal/producto y montos mínimos. Incluye generación masiva de códigos, panel de seguimiento de redenciones y métricas por campaña, integrado con el checkout de la plataforma AIA.',
     tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'Redis', 'Marketing'],
     color: 0xff6688,
-    image: '/AIA-Landing.png',
+    image: '/aia-cupons.png',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -276,7 +276,7 @@ export const projects: Project[] = [
     longDescription: 'Founding Developer de Galatea Labs. Contribuidor principal en productos potenciados por IA y desarrollo de plataforma. Creé la serie de blogs "Building AI Presence". Desarrollé el frontend con React/TypeScript, animaciones GSAP e interfaces Three.js, creando experiencias visuales inmersivas que reflejan la innovación tecnológica.',
     tags: ['React', 'TypeScript', 'GSAP', 'Three.js', 'AI Integration'],
     color: 0xff00d4,
-    image: 'https://galatealabs.ai/og-image.png',
+    image: 'galatealabs.png',
     links: [
       { type: 'live', url: 'https://galatealabs.ai' }
     ],

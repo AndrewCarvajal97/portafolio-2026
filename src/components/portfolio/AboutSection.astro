@@ -2,9 +2,11 @@
 /**
  * AboutSection Component
  *
- * Displays information about the developer including
- * photo, skills (technical and soft), experience, and background.
- * Optimized for responsive design.
+ * Business-card-style flip card with 3D perspective.
+ * Front: avatar + bio (capabilities & strengths) + stats.
+ * Back:  technical & soft skills.
+ * Click / Enter / Space toggles the flip.
+ * Mouse hover adds a subtle parallax tilt.
  */
 
 interface Props {
@@ -38,474 +40,614 @@ const stats = [
 ];
 ---
 
-<section class:list={['about-section', className]}>
-  <div class="about-section__container">
-    <!-- Left column: Photo and intro -->
-    <div class="about-section__left">
-      <div class="about-section__photo-wrapper">
-        <div class="about-section__photo">
-          <div class="about-section__photo-placeholder">
-            <span class="about-section__photo-initials">PC</span>
+<section class:list={['about-section', className]} aria-labelledby="about-title">
+  <h2 id="about-title" class="about-section__title">
+    <span class="about-section__title-accent">Sobre</span> Mí
+  </h2>
+
+  <div class="about-section__stage" id="aboutStage">
+    <button
+      type="button"
+      class="bcard"
+      id="businessCard"
+      aria-pressed="false"
+      aria-label="Tarjeta de presentación. Toca para girar y ver mis habilidades."
+    >
+      <div class="bcard__inner">
+
+        <!-- FRONT -->
+        <div class="bcard__face bcard__face--front">
+          <div class="bcard__stripe"></div>
+
+          <div class="bcard__grid-pattern" aria-hidden="true"></div>
+
+          <div class="bcard__photo bcard__photo--center">
+            <div class="bcard__photo-inner">
+              <span class="bcard__photo-initials">PC</span>
+            </div>
+            <span class="bcard__photo-ring" aria-hidden="true"></span>
           </div>
-        </div>
-        <div class="about-section__photo-glow"></div>
-      </div>
 
-      <div class="about-section__intro-content">
-        <h2 class="about-section__title">
-          <span class="about-section__title-accent">Sobre</span> Mí
-        </h2>
+          <div class="bcard__intro">
+            <p>Construyo plataformas SaaS de punta a punta. Mis fortalezas están en <strong>arquitectura limpia y escalable</strong>, sistemas de pagos productivos, agentes de IA con streaming, integraciones complejas y motores de reglas configurables para marketing y operaciones.</p>
+            <p>Me adapto entre profundizar como IC en una solución técnica y liderar técnicamente a un equipo pequeño. Aprendo más rápido cuando me toca resolver algo que no tiene respuesta obvia.</p>
+          </div>
 
-        <p class="about-section__intro">
-          Full-Stack Developer y Tech Leader con más de 3 años de experiencia
-          construyendo plataformas SaaS escalables.
-        </p>
-
-        <p class="about-section__description">
-          Especializado en Clean Architecture, principios SOLID, integración de IA,
-          sistemas de pagos (Stripe Connect) y arquitecturas multi-tenant.
-          Actualmente liderando el desarrollo en AIA Technology y Galatea Labs.
-        </p>
-
-        <div class="about-section__stats">
-          {
-            stats.map((stat) => (
-              <div class="stat">
-                <span class="stat__value">{stat.value}</span>
-                <span class="stat__label">{stat.label}</span>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- Right column: Skills -->
-    <div class="about-section__right">
-      <!-- Technical Skills -->
-      <div class="about-section__skills-section">
-        <h3 class="about-section__subtitle">Habilidades Técnicas</h3>
-
-        <div class="skills-grid">
-          {
-            technicalSkills.map((skillGroup) => (
-              <div class="skill-group">
-                <h4 class="skill-group__title">{skillGroup.category}</h4>
-                <div class="skill-group__items">
-                  {skillGroup.items.map((skill) => (
-                    <span class="skill-tag">{skill}</span>
-                  ))}
+          <div class="bcard__stats">
+            {
+              stats.map((stat) => (
+                <div class="bcard__stat">
+                  <span class="bcard__stat-value">{stat.value}</span>
+                  <span class="bcard__stat-label">{stat.label}</span>
                 </div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
+              ))
+            }
+          </div>
 
-      <!-- Soft Skills -->
-      <div class="about-section__skills-section">
-        <h3 class="about-section__subtitle">Habilidades Blandas</h3>
-
-        <div class="soft-skills-list">
-          {
-            softSkills.map((skill) => (
-              <span class="soft-skill-tag">{skill}</span>
-            ))
-          }
+          <span class="bcard__flip-hint" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            Toca para ver mis habilidades
+          </span>
         </div>
+
+        <!-- BACK -->
+        <div class="bcard__face bcard__face--back">
+          <div class="bcard__stripe bcard__stripe--back"></div>
+
+          <div class="bcard__grid-pattern" aria-hidden="true"></div>
+
+          <header class="bcard__back-header">
+            <h3 class="bcard__back-title">Habilidades</h3>
+          </header>
+
+          <div class="bcard__skills">
+            {
+              technicalSkills.map((group) => (
+                <div class="bcard__skill-group">
+                  <h4 class="bcard__skill-group-title">{group.category}</h4>
+                  <div class="bcard__skill-tags">
+                    {group.items.map((skill) => (
+                      <span class="bcard__skill">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="bcard__soft">
+            <p class="bcard__eyebrow bcard__eyebrow--soft">Soft skills</p>
+            <div class="bcard__soft-tags">
+              {softSkills.map((skill) => (
+                <span class="bcard__soft-tag">{skill}</span>
+              ))}
+            </div>
+          </div>
+
+          <span class="bcard__flip-hint" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"></path>
+            </svg>
+            Volver a mi perfil
+          </span>
+        </div>
+
       </div>
-    </div>
+    </button>
   </div>
 </section>
+
+<script>
+  class BusinessCardController {
+    private card: HTMLButtonElement | null;
+    private stage: HTMLElement | null;
+    private isFlipped = false;
+    private currentTiltX = 0;
+    private currentTiltY = 0;
+    private targetTiltX = 0;
+    private targetTiltY = 0;
+    private rafId: number | null = null;
+    private prefersReducedMotion: boolean;
+
+    constructor() {
+      this.card = document.getElementById('businessCard') as HTMLButtonElement | null;
+      this.stage = document.getElementById('aboutStage');
+      this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (!this.card || !this.stage) return;
+
+      this.card.addEventListener('click', this.toggleFlip);
+
+      if (!this.prefersReducedMotion) {
+        this.stage.addEventListener('mousemove', this.onMouseMove);
+        this.stage.addEventListener('mouseleave', this.onMouseLeave);
+        this.startAnimationLoop();
+      }
+    }
+
+    private toggleFlip = (): void => {
+      if (!this.card) return;
+      this.isFlipped = !this.isFlipped;
+      this.card.classList.toggle('is-flipped', this.isFlipped);
+      this.card.setAttribute('aria-pressed', String(this.isFlipped));
+    };
+
+    private onMouseMove = (e: MouseEvent): void => {
+      if (!this.stage) return;
+      const rect = this.stage.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      const maxTilt = 8;
+      this.targetTiltY = x * maxTilt;
+      this.targetTiltX = -y * maxTilt;
+    };
+
+    private onMouseLeave = (): void => {
+      this.targetTiltX = 0;
+      this.targetTiltY = 0;
+    };
+
+    private startAnimationLoop = (): void => {
+      const tick = () => {
+        this.currentTiltX += (this.targetTiltX - this.currentTiltX) * 0.12;
+        this.currentTiltY += (this.targetTiltY - this.currentTiltY) * 0.12;
+
+        if (this.card) {
+          this.card.style.setProperty('--tilt-x', `${this.currentTiltX.toFixed(2)}deg`);
+          this.card.style.setProperty('--tilt-y', `${this.currentTiltY.toFixed(2)}deg`);
+        }
+
+        this.rafId = requestAnimationFrame(tick);
+      };
+      this.rafId = requestAnimationFrame(tick);
+    };
+
+    public dispose(): void {
+      if (this.rafId) cancelAnimationFrame(this.rafId);
+    }
+  }
+
+  function init() {
+    new BusinessCardController();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
 
 <style>
   .about-section {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 80px 24px 60px;
     min-height: 100vh;
     z-index: 2;
     background: transparent;
-  }
-
-  .about-section__container {
-    max-width: 1100px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1.3fr;
-    gap: 50px;
-    align-items: start;
-  }
-
-  /* Left Column - Photo and Intro */
-  .about-section__left {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .about-section__photo-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-  }
-
-  .about-section__photo {
-    position: relative;
-    width: 180px;
-    height: 180px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 2px solid rgba(0, 212, 255, 0.3);
-    background: rgba(20, 20, 30, 0.8);
-    z-index: 1;
-  }
-
-  .about-section__photo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .about-section__photo-placeholder {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(255, 0, 212, 0.2) 100%);
-  }
-
-  .about-section__photo-initials {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 4px 20px rgba(0, 212, 255, 0.5);
-  }
-
-  .about-section__photo-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.25) 0%, transparent 70%);
-    filter: blur(30px);
-    z-index: 0;
-    animation: pulseGlow 4s ease-in-out infinite;
-  }
-
-  @keyframes pulseGlow {
-    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
-  }
-
-  .about-section__intro-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: 40px;
   }
 
   .about-section__title {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
     font-weight: 800;
     margin: 0;
     line-height: 1.1;
     letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.95);
+    text-align: center;
   }
 
   .about-section__title-accent {
     color: var(--accent-color, #00d4ff);
   }
 
-  .about-section__intro {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.6;
+  .about-section__stage {
+    perspective: 1600px;
+    perspective-origin: 50% 50%;
+    width: 100%;
+    max-width: 760px;
+  }
+
+  /* OUTER — mouse tilt, RAF updates */
+  .bcard {
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 8 / 5;
+    margin: 0 auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    font-family: inherit;
+    color: inherit;
+  }
+
+  .bcard:focus-visible {
+    outline: none;
+  }
+
+  .bcard:focus-visible::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 28px;
+    border: 2px solid var(--accent-color, #00d4ff);
+    pointer-events: none;
+  }
+
+  /* INNER — 180° flip with easing */
+  .bcard__inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bcard.is-flipped .bcard__inner {
+    transform: rotateY(180deg);
+  }
+
+  .bcard__face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(255, 0, 212, 0.16) 0%, transparent 50%),
+      linear-gradient(135deg, #0f1218 0%, #161a23 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 30px 60px -25px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 0 80px -25px rgba(0, 212, 255, 0.35);
+  }
+
+  .bcard__face--back {
+    transform: rotateY(180deg);
+  }
+
+  .bcard__grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .bcard__stripe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+      var(--accent-color, #00d4ff) 0%,
+      #ff00d4 100%
+    );
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+
+  .bcard__stripe--back {
+    background: linear-gradient(90deg, #ff00d4 0%, var(--accent-color, #00d4ff) 100%);
+  }
+
+  /* === FRONT === */
+  .bcard__photo {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    flex-shrink: 0;
+  }
+
+  .bcard__photo--center {
+    align-self: center;
+    margin-bottom: 4px;
+  }
+
+  .bcard__photo-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.25) 0%, rgba(255, 0, 212, 0.25) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bcard__photo-initials {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+    letter-spacing: -0.02em;
+  }
+
+  .bcard__photo-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--accent-color, #00d4ff), #ff00d4);
+    opacity: 0.3;
+    filter: blur(12px);
+    z-index: 1;
+    animation: bcardPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes bcardPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.55; }
+  }
+
+  .bcard__eyebrow {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-color, #00d4ff);
     margin: 0;
   }
 
-  .about-section__description {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.6;
-    margin: 0;
+  .bcard__eyebrow--soft {
+    color: rgba(255, 0, 212, 0.85);
   }
 
-  .about-section__stats {
+  .bcard__intro {
+    margin: 20px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    max-width: 580px;
+    align-self: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bcard__intro p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .bcard__intro strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .bcard__stats {
+    margin-top: auto;
+    padding-top: 20px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 12px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
   }
 
-  .stat {
+  .bcard__stat {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    padding: 10px 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
   }
 
-  .stat__value {
-    font-size: 1.5rem;
+  .bcard__stat-value {
+    font-size: 1.3rem;
     font-weight: 800;
     color: var(--accent-color, #00d4ff);
     line-height: 1;
   }
 
-  .stat__label {
-    font-size: 0.65rem;
+  .bcard__stat-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: rgba(255, 255, 255, 0.5);
     text-align: center;
   }
 
-  /* Right Column - Skills */
-  .about-section__right {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+  .bcard__flip-hint {
+    position: absolute;
+    bottom: 22px;
+    right: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
   }
 
-  .about-section__skills-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  .bcard__flip-hint svg {
+    color: var(--accent-color, #00d4ff);
   }
 
-  .about-section__subtitle {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.95);
+  /* === BACK === */
+  .bcard__back-header {
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
   }
 
-  /* Technical Skills Grid */
-  .skills-grid {
+  .bcard__back-title {
+    margin: 4px 0 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+
+  .bcard__skills {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    position: relative;
+    z-index: 1;
   }
 
-  .skill-group {
+  .bcard__skill-group {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 14px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    transition: all 0.3s ease;
   }
 
-  .skill-group:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(0, 212, 255, 0.2);
-  }
-
-  .skill-group__title {
-    font-size: 0.7rem;
+  .bcard__skill-group-title {
+    margin: 0;
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--accent-color, #00d4ff);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin: 0;
   }
 
-  .skill-group__items {
+  .bcard__skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .bcard__skill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+  }
+
+  .bcard__soft {
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bcard__soft-tags {
+    margin-top: 8px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
   }
 
-  .skill-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
-    transition: all 0.2s ease;
-  }
-
-  .skill-tag:hover {
-    background: rgba(0, 212, 255, 0.15);
-    border-color: rgba(0, 212, 255, 0.3);
-    color: var(--accent-color, #00d4ff);
-  }
-
-  /* Soft Skills - Compact pill tags */
-  .soft-skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .soft-skill-tag {
+  .bcard__soft-tag {
     display: inline-block;
-    padding: 6px 14px;
-    background: linear-gradient(135deg, rgba(255, 0, 212, 0.08) 0%, rgba(0, 212, 255, 0.08) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 50px;
-    font-size: 0.8rem;
+    padding: 5px 12px;
+    background: linear-gradient(135deg, rgba(255, 0, 212, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    font-size: 0.72rem;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.85);
-    transition: all 0.2s ease;
-    white-space: nowrap;
   }
 
-  .soft-skill-tag:hover {
-    background: linear-gradient(135deg, rgba(255, 0, 212, 0.15) 0%, rgba(0, 212, 255, 0.15) 100%);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    transform: translateY(-2px);
-  }
-
-  /* Responsive - Tablet */
+  /* Tablet */
   @media (max-width: 900px) {
-    .about-section {
-      padding: 80px 20px 50px;
+    .bcard {
+      aspect-ratio: auto;
+      min-height: 520px;
     }
 
-    .about-section__container {
-      grid-template-columns: 1fr;
-      gap: 40px;
-      max-width: 600px;
-    }
-
-    .about-section__left {
-      flex-direction: row;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .about-section__photo-wrapper {
-      flex-shrink: 0;
-    }
-
-    .about-section__photo {
-      width: 140px;
-      height: 140px;
-    }
-
-    .about-section__photo-initials {
-      font-size: 2.5rem;
-    }
-
-    .about-section__photo-glow {
-      width: 170px;
-      height: 170px;
-    }
-
-    .about-section__title {
-      font-size: 1.75rem;
-    }
-
-    .about-section__stats {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .skills-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .bcard__face {
+      padding: 32px 28px;
     }
   }
 
-  /* Responsive - Mobile */
+  /* Mobile */
   @media (max-width: 640px) {
     .about-section {
       padding: 80px 16px 40px;
+      gap: 24px;
     }
 
-    .about-section__container {
-      gap: 32px;
+    .about-section__stage {
+      max-width: 100%;
     }
 
-    .about-section__left {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    .bcard {
+      min-height: 560px;
     }
 
-    .about-section__photo {
-      width: 120px;
-      height: 120px;
+    .bcard__face {
+      padding: 28px 22px;
     }
 
-    .about-section__photo-initials {
-      font-size: 2rem;
+    .bcard__photo {
+      width: 76px;
+      height: 76px;
     }
 
-    .about-section__title {
-      font-size: 1.5rem;
+    .bcard__photo-initials {
+      font-size: 1.6rem;
     }
 
-    .about-section__intro {
-      font-size: 0.9rem;
+    .bcard__intro p {
+      font-size: 0.875rem;
     }
 
-    .about-section__description {
-      font-size: 0.85rem;
-    }
-
-    .about-section__stats {
+    .bcard__stats {
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      padding: 14px;
+      gap: 6px;
+      padding-top: 16px;
     }
 
-    .stat__value {
-      font-size: 1.25rem;
+    .bcard__stat-value {
+      font-size: 1.1rem;
     }
 
-    .stat__label {
-      font-size: 0.6rem;
-    }
-
-    .about-section__subtitle {
-      font-size: 1rem;
-    }
-
-    .skills-grid {
+    .bcard__skills {
       grid-template-columns: 1fr;
+      gap: 8px;
     }
 
-    .skill-group {
-      padding: 12px;
-    }
-
-    .soft-skills-list {
-      justify-content: center;
-    }
-
-    .soft-skill-tag {
-      padding: 6px 12px;
-      font-size: 0.75rem;
+    .bcard__flip-hint {
+      bottom: 16px;
+      right: 22px;
+      font-size: 0.65rem;
     }
   }
 
-  /* Very small screens */
-  @media (max-width: 380px) {
-    .about-section {
-      padding: 70px 12px 30px;
+  @media (prefers-reduced-motion: reduce) {
+    .bcard__inner {
+      transition: transform 0.3s ease;
     }
 
-    .about-section__photo {
-      width: 100px;
-      height: 100px;
-    }
-
-    .about-section__stats {
-      padding: 12px;
-      gap: 12px;
+    .bcard__photo-ring {
+      animation: none;
     }
   }
 </style>
