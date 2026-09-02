@@ -124,6 +124,20 @@ Stack: TypeScript, Node.js, OpenAI, Anthropic, Multi-LLM
 
 Creé un framework de agentes AI multi-LLM desde cero con cumplimiento de principios SOLID e inyección de dependencias. Incluye migraciones de SDKs de proveedores y manejo de tool_use de Anthropic. Paquete publicado en NPM para facilitar la integración de múltiples LLMs (OpenAI, Anthropic) en aplicaciones TypeScript/Node.js.
 
+### Distribuciones Pastor Julio Delgado — https://www.dpjd.com/#/
+
+Rol: Full-Stack Developer
+Stack: JavaScript, HTML5, CSS3, Diseño Web, Experiencia de Usuario
+
+Diseñé y desarrollé el sitio web corporativo de Distribuciones Pastor Julio Delgado, empresa con cobertura nacional, centros de distribución y miles de clientes. La experiencia presenta su trayectoria, marcas propias, cobertura, centros de distribución, oportunidades laborales y canales de contacto de forma clara para clientes y aliados comerciales.
+
+### Santander Accesible — https://dev.turismo-santander.desarrollos-pablo-carvajal.com/
+
+Rol: Full-Stack Developer
+Stack: JavaScript, HTML5, CSS3, Accesibilidad, Turismo, Experiencia de Usuario
+
+Desarrollé Santander Accesible, una plataforma de turismo inclusivo para la Gobernación de Santander. El proyecto facilita el descubrimiento de destinos y experiencias del departamento con una experiencia orientada a personas con distintas formas de movilidad, visión y audición, conectando el patrimonio regional con una navegación digital más accesible.
+
 ## Otros proyectos
 
 - **Gestor de Proyectos Mudi**: Sistema avanzado de gestión de proyectos 3D con visualización en navegador y control de versiones.

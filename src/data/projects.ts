@@ -428,6 +428,54 @@ export const projects: Project[] = [
       'Adquirí experiencia midiendo impacto de negocio real (-60% en aprobaciones) y comunicándolo.',
       'Maduré mi capacidad de levantar un producto end-to-end siendo el único responsable técnico.'
     ]
+  },
+  {
+    id: 'dpjd',
+    title: 'Distribuciones Pastor Julio Delgado',
+    description: 'Plataforma web corporativa para una empresa distribuidora y comercializadora de productos de consumo masivo.',
+    longDescription: 'Diseñé y desarrollé el sitio web corporativo de Distribuciones Pastor Julio Delgado, empresa con cobertura nacional, centros de distribución y miles de clientes. La experiencia presenta su trayectoria, marcas propias, cobertura, centros de distribución, oportunidades laborales y canales de contacto de forma clara para clientes y aliados comerciales.',
+    tags: ['JavaScript', 'HTML5', 'CSS3', 'Diseño Web', 'Experiencia de Usuario'],
+    color: 0xff8844,
+    image: '/proyectos-protegidos.webp',
+    links: [
+      { type: 'live', url: 'https://www.dpjd.com/#/' }
+    ],
+    featured: true,
+    role: 'Full-Stack Developer',
+    challenges: [
+      'Organizar información corporativa, comercial y operativa en una navegación clara para públicos distintos.',
+      'Presentar cobertura nacional, centros de distribución y canales de atención sin sobrecargar la experiencia.',
+      'Construir una experiencia responsive para clientes que consultan desde dispositivos móviles.'
+    ],
+    experience: [
+      'Aprendí a traducir la operación de una empresa distribuidora en una experiencia digital fácil de explorar.',
+      'Refiné la presentación de información de cobertura y contacto para convertir visitas en oportunidades comerciales.',
+      'Consolidé criterios de diseño responsive para sitios corporativos con contenido amplio.'
+    ]
+  },
+  {
+    id: 'santander-accesible',
+    title: 'Santander Accesible',
+    description: 'Plataforma de turismo inclusivo para descubrir Santander con información accesible sobre destinos y experiencias.',
+    longDescription: 'Desarrollé Santander Accesible, una plataforma de turismo inclusivo para la Gobernación de Santander. El proyecto facilita el descubrimiento de destinos y experiencias del departamento con una experiencia orientada a personas con distintas formas de movilidad, visión y audición, conectando el patrimonio regional con una navegación digital más accesible.',
+    tags: ['JavaScript', 'HTML5', 'CSS3', 'Accesibilidad', 'Turismo', 'Experiencia de Usuario'],
+    color: 0x22aa88,
+    image: '/proyectos-protegidos.webp',
+    links: [
+      { type: 'live', url: 'https://dev.turismo-santander.desarrollos-pablo-carvajal.com/' }
+    ],
+    featured: true,
+    role: 'Full-Stack Developer',
+    challenges: [
+      'Convertir la oferta turística del departamento en una experiencia sencilla de explorar para públicos diversos.',
+      'Incorporar criterios de turismo inclusivo desde la estructura de contenidos y la navegación.',
+      'Mantener una experiencia visual atractiva sin perder claridad ni legibilidad.'
+    ],
+    experience: [
+      'Profundicé en el diseño de experiencias digitales para turismo accesible e inclusivo.',
+      'Aprendí a comunicar el valor de un territorio combinando contenido institucional y descubrimiento de destinos.',
+      'Refiné decisiones de jerarquía visual y navegación para públicos con necesidades variadas.'
+    ]
   }
 ];
 
