@@ -229,8 +229,11 @@ const stats = [
     align-items: center;
     justify-content: flex-start; /* contenido pegado al top, no centrado vertical */
     padding: clamp(24px, 3.5vh, 48px) 24px clamp(28px, 4vh, 56px);
+    /* min-height, no height: llena la pantalla si el contenido es corto, pero
+       deja crecer y hacer scroll si la tarjeta necesita más alto. */
     min-height: 100vh;
     min-height: 100dvh;
+    box-sizing: border-box;
     z-index: 2;
     background: transparent;
     gap: clamp(16px, 2.5vh, 24px);
@@ -262,8 +265,11 @@ const stats = [
     --tilt-x: 0deg;
     --tilt-y: 0deg;
     position: relative;
+    display: block;
     width: 100%;
-    aspect-ratio: 8 / 5;
+    /* Proporción sugerida, no impuesta: si el contenido necesita más alto, crece.
+       min-height la respeta en pantallas anchas; el contenido manda en el resto. */
+    min-height: min(47.5vw, 475px);
     margin: 0 auto;
     padding: 0;
     background: transparent;
@@ -273,6 +279,7 @@ const stats = [
     transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
     font-family: inherit;
     color: inherit;
+    text-align: left;
   }
 
   .bcard:focus-visible {
@@ -298,10 +305,13 @@ const stats = [
     }
   }
 
-  /* INNER — 180° flip with easing */
+  /* INNER — 180° flip with easing.
+     Grid de una sola celda: ambas caras se apilan en el mismo espacio, así que
+     la cara más alta define la altura y ninguna queda recortada. */
   .bcard__inner {
-    position: absolute;
-    inset: 0;
+    display: grid;
+    grid-template-areas: 'face';
+    min-height: 100%;
     transform-style: preserve-3d;
     transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -311,8 +321,8 @@ const stats = [
   }
 
   .bcard__face {
-    position: absolute;
-    inset: 0;
+    grid-area: face;
+    position: relative;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     border-radius: 24px;
@@ -485,10 +495,11 @@ const stats = [
     text-align: center;
   }
 
+  /* En flujo (no absolute) para que nunca se superponga al contenido
+     cuando la tarjeta se aprieta en pantallas cortas. */
   .bcard__flip-hint {
-    position: absolute;
-    bottom: 22px;
-    right: 28px;
+    align-self: flex-end;
+    margin-top: 14px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -496,6 +507,12 @@ const stats = [
     letter-spacing: 0.04em;
     color: rgba(255, 255, 255, 0.4);
     pointer-events: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bcard__flip-hint svg {
+    flex-shrink: 0;
   }
 
   .bcard__flip-hint svg {
@@ -568,6 +585,12 @@ const stats = [
     z-index: 1;
   }
 
+  /* En la cara trasera el hint se va al fondo; en la frontal ya lo hacen los stats. */
+  .bcard__face--back .bcard__flip-hint {
+    margin-top: auto;
+    padding-top: 14px;
+  }
+
   .bcard__soft-tags {
     margin-top: 8px;
     display: flex;
@@ -589,8 +612,7 @@ const stats = [
   /* Tablet */
   @media (max-width: 900px) {
     .bcard {
-      aspect-ratio: auto;
-      min-height: 520px;
+      min-height: 0; /* el contenido define la altura */
     }
 
     .bcard__face {
@@ -608,10 +630,6 @@ const stats = [
     .about-section__stage {
       max-width: 100%;
       perspective: 900px; /* perspective reducida para evitar deformaciones extremas */
-    }
-
-    .bcard {
-      min-height: clamp(440px, 78vh, 600px); /* se adapta al alto del viewport */
     }
 
     .bcard__face {
@@ -654,19 +672,41 @@ const stats = [
       font-size: 0.55rem;
     }
 
+    /* Se mantienen 2 columnas: apilar los 4 grupos disparaba el alto de la
+       cara trasera y era la causa principal del desbordamiento en móvil. */
     .bcard__skills {
-      grid-template-columns: 1fr;
       gap: 8px;
     }
 
+    .bcard__skill-group {
+      padding: 10px 11px;
+      gap: 6px;
+    }
+
+    .bcard__skill {
+      padding: 3px 7px;
+      font-size: 0.66rem;
+    }
+
+    .bcard__back-title {
+      font-size: 1.3rem;
+    }
+
+    .bcard__back-header {
+      margin-bottom: 14px;
+    }
+
+    .bcard__soft-tag {
+      padding: 4px 10px;
+      font-size: 0.68rem;
+    }
+
     .bcard__flip-hint {
-      bottom: 14px;
-      right: 18px;
       font-size: 0.65rem;
     }
   }
 
-  /* Móvil pequeño (360px y menos) */
+  /* Móvil pequeño (380px y menos) */
   @media (max-width: 380px) {
     .bcard__face {
       padding: 20px 16px;
@@ -676,10 +716,52 @@ const stats = [
       grid-template-columns: repeat(2, 1fr); /* en muy pequeñito sí pasamos a 2x2 */
     }
 
+    .bcard__skills {
+      grid-template-columns: 1fr; /* aquí sí no caben dos columnas de tags */
+    }
+
     .bcard__flip-hint {
-      position: static;
-      margin-top: 12px;
+      align-self: center;
       justify-content: center;
+    }
+  }
+
+  /* Landscape bajo (móvil girado): el alto disponible es mínimo, así que
+     compactamos y dejamos que la sección haga scroll en vez de recortar. */
+  @media (max-height: 560px) and (orientation: landscape) {
+    .about-section {
+      min-height: 0;
+      padding: 24px 16px 32px;
+    }
+
+    .bcard {
+      min-height: 0;
+    }
+
+    .bcard__face {
+      padding: 20px 24px;
+    }
+
+    .bcard__photo {
+      width: 58px;
+      height: 58px;
+    }
+
+    .bcard__photo-initials {
+      font-size: 1.25rem;
+    }
+
+    .bcard__intro {
+      margin-top: 12px;
+      gap: 8px;
+    }
+
+    .bcard__stats {
+      padding-top: 12px;
+    }
+
+    .bcard__skills {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 

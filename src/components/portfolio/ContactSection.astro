@@ -71,6 +71,7 @@ const channels = [
     <a
       class="whatsapp-cta tilt-card"
       data-tilt
+      data-track-contact="whatsapp"
       href={WHATSAPP_HREF}
       target="_blank"
       rel="noopener noreferrer"
@@ -101,7 +102,7 @@ const channels = [
     </a>
 
     <div class="quick-actions">
-      <a href={TEL_HREF} class="quick-action tilt-card" data-tilt aria-label={`Llamar a ${WHATSAPP_PHONE_DISPLAY}`}>
+      <a href={TEL_HREF} class="quick-action tilt-card" data-tilt data-track-contact="phone" aria-label={`Llamar a ${WHATSAPP_PHONE_DISPLAY}`}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
         </svg>
@@ -112,6 +113,7 @@ const channels = [
         class="quick-action tilt-card"
         data-tilt
         data-copy={WHATSAPP_PHONE_DISPLAY}
+        data-track-contact="copy_phone"
         aria-label="Copiar número al portapapeles"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -127,6 +129,7 @@ const channels = [
         <a
           class="channel tilt-card"
           data-tilt
+          data-track-contact={c.id}
           href={c.href}
           target={c.href.startsWith('http') ? '_blank' : null}
           rel={c.href.startsWith('http') ? 'noopener noreferrer' : null}
@@ -185,6 +188,8 @@ const channels = [
 </section>
 
 <script>
+  import { trackContactClick, type ContactChannel } from '../../lib/analytics';
+
   class ContactTilt {
     private cards: HTMLElement[];
     private prefersReducedMotion: boolean;
@@ -284,9 +289,24 @@ const channels = [
     }
   }
 
+  /**
+   * Delegated click tracker — any element with [data-track-contact="channel"]
+   * fires a Clarity event when interacted with (pointerdown so we catch the
+   * intent before the browser navigates away).
+   */
+  function setupContactTracking(): void {
+    document.querySelectorAll<HTMLElement>('[data-track-contact]').forEach((el) => {
+      el.addEventListener('pointerdown', () => {
+        const channel = el.dataset.trackContact as ContactChannel | undefined;
+        if (channel) trackContactClick(channel);
+      });
+    });
+  }
+
   function init() {
     new ContactTilt();
     new CopyToClipboard();
+    setupContactTracking();
   }
 
   if (document.readyState === 'loading') {

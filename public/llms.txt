@@ -1,0 +1,129 @@
+# Pablo Andrés Carvajal Ramírez
+
+> Full-Stack Developer & Tech Leader en Bucaramanga, Santander, Colombia.
+> +3 años construyendo plataformas SaaS de punta a punta: arquitectura limpia
+> y escalable, sistemas de pagos en producción, agentes de IA con streaming,
+> integraciones complejas y motores de reglas configurables.
+
+- Sitio: https://pablocarvajal.dev
+- LinkedIn: https://www.linkedin.com/in/pablo-andres-carvajal-ramirez-8114162aa/
+- GitHub: https://github.com/AndrewCarvajal97
+- Ubicación: Bucaramanga, Santander, Colombia
+
+## Stack principal
+
+Backend: Node.js, TypeScript, NestJS, Express, PHP
+Frontend: React, Vue.js, Next.js, Astro, TailwindCSS
+Datos: PostgreSQL, MongoDB, MySQL, Redis, Firebase
+IA y cloud: AI Agents, MCP Servers, RAG, LLMs, Google Cloud, Docker
+
+## Proyectos destacados
+
+### AIA Platform — https://askaia.ai
+
+Rol: Tech Leader & Full-Stack Developer
+Stack: NestJS, TypeScript, React 19, PostgreSQL, Stripe Connect, AI Agents
+
+Tech Leader en AIA Technology. Contribuí al desarrollo de una plataforma SaaS completa para gestión de restaurantes usando NestJS, PostgreSQL, React 19 y TypeScript. Implementé pagos divididos con Stripe Connect (platform, restaurant_pool, direct_branch), integración con Catering Rewards API, y conectores de delivery (DoorDash, Uber Direct, Cartwheel). Trabajé sobre una arquitectura multi-tenant existente en PostgreSQL (stored procedures y auditoría) aportando módulos, integraciones y mejoras. Desarrollé agentes de IA para asistentes de gerentes con streaming SSE y renderizado de gráficos.
+
+### INCConnection — Classroom & App — https://dev.admin.innconection-plus.texelbit.com/classroom
+
+Rol: Full-Stack Developer
+Stack: NestJS, TypeScript, React, Google Workspace, OAuth 2.0, PostgreSQL
+
+Construí la suite completa: el panel administrativo Classroom para gestión académica (cursos, secciones, asistencia, calificaciones, calendarios) y la aplicación de estudiantes con experiencia integrada de Google Workspace mediante Domain-Wide Delegation. Implementé Google Calendar, Meet y Drive sobre un backend NestJS modular, gestiono service accounts en Google Cloud y flujos OAuth seguros. Diseñé permisos por rol (admin, docente, estudiante) y un sistema de notificaciones que mantiene sincronizadas a las dos audiencias.
+
+### Contavía 360 — https://contavia360.com/
+
+Rol: Full-Stack Developer
+Stack: NestJS, TypeScript, React, PostgreSQL, DIAN, Facturación Electrónica
+
+Full-Stack Developer en Contavía 360, la plataforma contable de Texelbit para contadores en Colombia. El producto ataca lo repetitivo del día a día contable: automatiza la descarga y validación de documentos electrónicos de la DIAN (parseo de XML UBL, verificación de CUFE, deduplicación y emparejamiento con el PDF), centraliza la información de todos los clientes de un contador en un solo espacio multi-empresa, y exporta libros contables listos para importar en minutos. Construí el motor de asientos automáticos con reglas configurables por tipo de operación, la conciliación bancaria con importación masiva de extractos y la reportería fiscal. Optimicé las consultas de balances y estados financieros sobre volúmenes históricos grandes.
+
+### Fundación Núcleo Digital — Competencias — https://competencias.fundacion-nucleodigital.org/
+
+Rol: Fundador & Full-Stack Developer
+Stack: React, TypeScript, Vite, PWA, Tiempo Real, Impacto Social
+
+Plataforma web de la Fundación Núcleo Digital (Bucaramanga, Santander) para organizar competencias de tecnología — hackathones, retos de programación, olimpiadas y retos de innovación y emprendimiento — dirigidas a barrios populares, comunidades y empresas. Cubre el ciclo completo del evento: creación de la convocatoria, inscripción y armado de equipos, asignación de jurados, evaluación con rúbrica multi-criterio y ranking en vivo durante la jornada. Es un proyecto de impacto social sin ánimo de lucro donde también figuro como fundador y representante legal de la fundación, además de responsable técnico de la plataforma.
+
+### Asy Neuronal — https://asy-neuronal.com/
+
+Rol: Co-fundador & Arquitecto de Soluciones IA
+Stack: AI Agents, MCP Servers, RAG, TypeScript, Cloud, Modernización Legacy
+
+Asy Neuronal es la empresa de ingeniería de software que co-construyo desde Bucaramanga para Colombia y toda Latinoamérica. Su propuesta es concreta: poner el primer agente de IA de una empresa en producción en seis semanas, conectado a sus datos y procesos reales — cotizadores automáticos que consultan el ERP, soporte 24/7 por WhatsApp, RAG sobre documentación corporativa — y no como demo, sino operando. La segunda línea es la modernización de sistemas legados por fases hacia arquitecturas cloud-native. Diseñé y desarrollé el sitio y la identidad digital, y defino la arquitectura de las soluciones que entregamos: servidores MCP, pipelines de RAG y orquestación multi-agente sobre los sistemas que el cliente ya tiene.
+
+### AIA Docs — https://askaia.ai
+
+Rol: Full-Stack Developer
+Stack: Next.js, TypeScript, MDX, Pinecone, Embeddings
+
+Diseñé y desarrollé AIA Docs, la plataforma central de documentación técnica, operativa y comercial del ecosistema AIA. Incluye versionado por release, control de acceso por rol, búsqueda semántica con embeddings vectoriales y un editor MDX integrado. Sirve como única fuente de verdad para onboarding de empleados, manuales de restaurantes y especificaciones de APIs internas.
+
+### AIA Rewards — https://askaia.ai
+
+Rol: Tech Leader & Full-Stack Developer
+Stack: NestJS, TypeScript, Strategy Pattern, PostgreSQL, Redis, Event Sourcing
+
+Implementación mejorada del sistema de rewards que originalmente dependía exclusivamente del proveedor externo Catering Rewards. Le dio a AIA la libertad de ofrecer el servicio a sus clientes finales con configuraciones y control mucho más granular, manteniendo el proveedor externo como complemento para usuarios que ya contaban con él. La pieza clave es la aplicación del patrón Strategy: una interfaz común de RewardsProvider que permite intercambiar en tiempo de ejecución entre el proveedor interno mejorado y cualquier proveedor externo integrado, sin tocar el código consumidor (checkout, app móvil, dashboard). Incluye motor de reglas configurable por restaurante, niveles, expiración de puntos y detección de fraude.
+
+### AIA Catering Rewards — https://askaia.ai
+
+Rol: Full-Stack Developer
+Stack: React, TypeScript, NestJS, SSE, Real-time, PostgreSQL
+
+Portal web que diseñé para los clientes finales del ecosistema AIA: les permite hacer seguimiento de sus rewards (puntos, niveles, historial), revisar sus órdenes y premios canjeados, explorar campañas activas y, sobre todo, hacer tracking de sus órdenes en tiempo real mediante Server-Sent Events. Apenas el driver confirma el pickup en el restaurante, el portal abre un canal SSE que empuja actualizaciones de estado y posición hasta la entrega, sin polling y manteniendo la latencia sub-segundo. Se integra con el motor de Rewards multi-proveedor, el sistema de cupones, el flujo de órdenes y el tracking GPS de drivers.
+
+### AIA Driver Tracking — https://askaia.ai
+
+Rol: Full-Stack Developer
+Stack: NestJS, WebSockets, React, Mapbox, PostGIS, Redis
+
+Sistema de tracking en tiempo real para los conductores propios y de terceros de AIA. Recibe posiciones GPS por WebSocket, calcula ETAs dinámicos al cliente, dibuja rutas optimizadas y aplica geocercas para eventos operativos (llegada al restaurante, salida, llegada al cliente). Incluye panel de despacho con mapa en vivo y reproducción histórica de rutas.
+
+### AIA Mobile App — https://askaia.ai
+
+Rol: Full-Stack Developer
+Stack: React Native, Expo, TypeScript, AI Agents, SSE, Monorepo
+
+Versión móvil del dashboard administrativo de AIA. Replica las funcionalidades de gestión del web (operación de restaurantes, métricas, configuración, órdenes, equipo) y embebe los mismos agentes de IA del dashboard para que los gerentes puedan consultarles en cualquier momento. Construida con React Native + Expo, consume las mismas APIs y comparte tipos/SDK con la plataforma web a través de un paquete monorepo, garantizando paridad funcional entre ambos clientes.
+
+### INCConnection Mobile — https://dev.app.innconection.texelbit.com/
+
+Rol: Full-Stack Developer
+Stack: React Native, Expo, TypeScript, Google Calendar, Push Notifications
+
+App móvil del ecosistema INCConnection que reúne en una sola experiencia los cursos del estudiante, calendario académico sincronizado con Google Calendar, links rápidos a sesiones Meet, control de asistencia y notificaciones de avisos académicos. Construida en React Native + Expo, consume el mismo backend NestJS de la suite web.
+
+### AIA Cupones & Descuentos — https://askaia.ai
+
+Rol: Full-Stack Developer (owner)
+Stack: NestJS, TypeScript, React, PostgreSQL, Redis, Marketing
+
+Diseñé y desarrollé un sistema de cupones y descuentos ad-hoc exclusivo del ecosistema AIA. Permite al equipo de marketing crear campañas con descuentos por porcentaje o monto fijo, cupones promocionales para clientes, códigos de uso único o multi-uso, vigencia temporal, restricciones por sucursal/producto y montos mínimos. Incluye generación masiva de códigos, panel de seguimiento de redenciones y métricas por campaña, integrado con el checkout de la plataforma AIA.
+
+### Galatea Labs — https://galatealabs.ai
+
+Rol: Founding Developer
+Stack: React, TypeScript, GSAP, Three.js, AI Integration
+
+Founding Developer de Galatea Labs. Contribuidor principal en productos potenciados por IA y desarrollo de plataforma. Creé la serie de blogs "Building AI Presence". Desarrollé el frontend con React/TypeScript, animaciones GSAP e interfaces Three.js, creando experiencias visuales inmersivas que reflejan la innovación tecnológica.
+
+### Voyagr — https://voyagr.com
+
+Rol: Tech Leader & Lead Developer
+Stack: React Native, Expo, TypeScript, Expo Router, Reanimated, EAS Build
+
+Desarrollador principal y Tech Leader de Voyagr, una app móvil multiplataforma (iOS, Android y web) construida con Expo + React Native y New Architecture. Permite descubrir destinos jerárquicamente (países → estados → ciudades → lugares de interés), planificar viajes (Journey) con itinerarios, intereses y compañeros, mensajería entre viajeros (chats directos, grupales y salas), autenticación multi-proveedor (email, Google, Apple, OTP por email/teléfono) y un módulo de reconocimiento de lugares vía cámara que sube capturas al backend. Arquitectura modular por features con file-based routing (Expo Router 6), patrones de diseño aplicados (Singleton, Factory, Repository, Provider) y consumo de tres APIs REST desacopladas (Auth, Localization y Core). Definí convenciones técnicas, documentación interna y pipeline EAS Build del proyecto.
+
+### asy-neuronal-agents — https://www.npmjs.com/package/@andrewcarvajal97/asy-neuronal-agents
+
+Rol: Creator & Maintainer
+Stack: TypeScript, Node.js, OpenAI, Anthropic, Multi-LLM
+
+Creé un framework de agentes AI multi-LLM desde cero con cumplimiento de principios SOLID e inyección de dependencias. Incluye migraciones de SDKs de proveedores y manejo de tool_use de Anthropic. Paquete publicado en NPM para facilitar la integración de múltiples LLMs (OpenAI, Anthropic) en aplicaciones TypeScript/Node.js.
+
+## Otros proyectos
+
+- **Gestor de Proyectos Mudi**: Sistema avanzado de gestión de proyectos 3D con visualización en navegador y control de versiones.

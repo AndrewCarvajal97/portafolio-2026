@@ -6,6 +6,8 @@
  * Includes global styles, fonts, and meta tags.
  */
 
+import { projects } from '../data/projects';
+
 interface Props {
   title?: string;
   description?: string;
@@ -17,6 +19,46 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og-image.png', Astro.site).href;
+
+/**
+ * Datos que se comparten entre las meta tags y el JSON-LD.
+ * Se derivan de projects.ts para que el structured data no se
+ * desincronice cada vez que se agrega o cambia un proyecto.
+ */
+const SITE_URL = 'https://pablocarvajal.dev';
+const PERSON_ID = `${SITE_URL}/#pablo-carvajal`;
+
+const socialProfiles = [
+  'https://www.linkedin.com/in/pablo-andres-carvajal-ramirez-8114162aa/',
+  'https://github.com/AndrewCarvajal97'
+];
+
+// Tecnologías reales, sin repetir, tomadas de los tags de los proyectos.
+const knowsAbout = [...new Set(projects.flatMap((p) => p.tags))].sort();
+
+// Los proyectos destacados se exponen como obras del portafolio para que
+// buscadores y asistentes de IA puedan citarlos con su enlace real.
+const featuredProjects = projects.filter((p) => p.featured);
+
+const keywords = [
+  'Pablo Andrés Carvajal',
+  'Full-Stack Developer Colombia',
+  'Tech Leader Bucaramanga',
+  'desarrollador NestJS',
+  'desarrollador React TypeScript',
+  'agentes de IA',
+  'MCP servers',
+  'Stripe Connect',
+  'plataformas SaaS',
+  'portafolio desarrollador Colombia'
+].join(', ');
+
+// Analytics tokens (public — they get embedded in the deployed JS).
+// Configured via .env (local) or repo secrets (CI). Empty in localhost dev.
+const cfAnalyticsToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN as string | undefined;
+const clarityProjectId = import.meta.env.PUBLIC_CLARITY_PROJECT_ID as string | undefined;
+const isProduction = import.meta.env.PROD;
 ---
 
 <!doctype html>
@@ -34,40 +76,134 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Pablo Andrés Carvajal Ramírez" />
+    <meta name="keywords" content={keywords} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
 
-    <!-- Open Graph -->
+    <!-- SEO local: ayuda a que me ubiquen geográficamente -->
+    <meta name="geo.region" content="CO-SAN" />
+    <meta name="geo.placename" content="Bucaramanga, Santander, Colombia" />
+    <meta name="geo.position" content="7.1193;-73.1227" />
+    <meta name="ICBM" content="7.1193, -73.1227" />
+
+    <!--
+      Open Graph — así se renderiza la tarjeta al compartir en WhatsApp,
+      Facebook, LinkedIn, Telegram, Discord y Slack.
+      og:image debe ser URL absoluta y el archivo debe existir en /public,
+      o los scrapers no muestran ninguna previsualización.
+    -->
+    <meta property="og:site_name" content="Pablo Andrés Carvajal" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="profile" />
     <meta property="og:url" content={canonicalURL.href} />
     <meta property="og:locale" content="es_CO" />
-    <meta property="og:image" content={new URL('/og-image.png', Astro.site).href} />
+    <meta property="og:locale:alternate" content="es_ES" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Pablo Andrés Carvajal — Full-Stack Developer & Tech Leader" />
+    <meta property="profile:first_name" content="Pablo Andrés" />
+    <meta property="profile:last_name" content="Carvajal Ramírez" />
+    <meta property="profile:gender" content="male" />
 
-    <!-- Twitter Card -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL('/og-image.png', Astro.site).href} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content="Pablo Andrés Carvajal — Full-Stack Developer & Tech Leader" />
 
-    <!-- Structured Data -->
+    <!--
+      Structured Data (JSON-LD) — @graph con nodos enlazados por @id.
+      Es lo que leen Google (incluido el modo IA), Bing y los asistentes LLM
+      para responder "¿quién es Pablo Carvajal?" citando datos concretos:
+      rol, ubicación, stack real y proyectos con su enlace.
+    -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Pablo Andrés Carvajal Ramírez",
-      "jobTitle": "Full-Stack Developer & Tech Leader",
-      "url": "https://pablocarvajal.dev",
-      "sameAs": [
-        "https://www.linkedin.com/in/pablo-andres-carvajal-ramirez-8114162aa/",
-        "https://github.com/AndrewCarvajal97"
-      ],
-      "knowsAbout": ["Node.js", "TypeScript", "NestJS", "React", "PostgreSQL", "AI Agents", "SaaS"],
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Bucaramanga",
-        "addressCountry": "CO"
-      }
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": PERSON_ID,
+          "name": "Pablo Andrés Carvajal Ramírez",
+          "alternateName": ["Pablo Carvajal", "Pablo Andrés Carvajal"],
+          "givenName": "Pablo Andrés",
+          "familyName": "Carvajal Ramírez",
+          "jobTitle": "Full-Stack Developer & Tech Leader",
+          "description": description,
+          "url": SITE_URL,
+          "image": ogImage,
+          "sameAs": socialProfiles,
+          "knowsAbout": knowsAbout,
+          "knowsLanguage": ["es", "en"],
+          "nationality": { "@type": "Country", "name": "Colombia" },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bucaramanga",
+            "addressRegion": "Santander",
+            "addressCountry": "CO"
+          },
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Asy Neuronal",
+            "url": "https://asy-neuronal.com/",
+            "description": "Ingeniería de software: agentes de IA en producción y modernización de sistemas legados."
+          },
+          "founder": {
+            "@type": "NGO",
+            "name": "Fundación Núcleo Digital",
+            "url": "https://competencias.fundacion-nucleodigital.org/"
+          },
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Full-Stack Developer",
+            "occupationLocation": { "@type": "City", "name": "Bucaramanga, Colombia" },
+            "skills": knowsAbout.join(", ")
+          },
+          "mainEntityOfPage": { "@id": `${SITE_URL}/#webpage` }
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          "url": SITE_URL,
+          "name": "Pablo Andrés Carvajal — Portafolio",
+          "description": description,
+          "inLanguage": "es-CO",
+          "publisher": { "@id": PERSON_ID }
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": `${SITE_URL}/#webpage`,
+          "url": canonicalURL.href,
+          "name": title,
+          "description": description,
+          "inLanguage": "es-CO",
+          "isPartOf": { "@id": `${SITE_URL}/#website` },
+          "about": { "@id": PERSON_ID },
+          "primaryImageOfPage": ogImage
+        },
+        {
+          "@type": "CollectionPage",
+          "@id": `${SITE_URL}/#portfolio`,
+          "name": "Proyectos de Pablo Andrés Carvajal",
+          "isPartOf": { "@id": `${SITE_URL}/#website` },
+          "about": { "@id": PERSON_ID },
+          "hasPart": featuredProjects.map((p) => ({
+            "@type": "CreativeWork",
+            "name": p.title,
+            "description": p.description,
+            "abstract": p.longDescription,
+            "url": p.links?.find((l) => l.type === 'live')?.url ?? SITE_URL,
+            "image": new URL(p.image, Astro.site).href,
+            "keywords": p.tags.join(", "),
+            "creator": { "@id": PERSON_ID },
+            "author": { "@id": PERSON_ID }
+          }))
+        }
+      ]
     })} />
 
     <!-- Fonts (non-blocking) -->
@@ -85,6 +221,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         rel="stylesheet"
       />
     </noscript>
+
+    {/*
+      Analytics — only injected in production builds and when the token is set.
+      Both tools are cookieless / GDPR-safe out of the box; no banner needed.
+    */}
+    {isProduction && cfAnalyticsToken && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${cfAnalyticsToken}"}`}
+      ></script>
+    )}
+
+    {isProduction && clarityProjectId && (
+      <script is:inline define:vars={{ clarityProjectId }}>
+        (function (c, l, a, r, i, t, y) {
+          c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+          t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+          y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, 'clarity', 'script', clarityProjectId);
+      </script>
+    )}
   </head>
   <body>
     <a href="#portfolio-main" class="skip-link">Saltar al contenido principal</a>

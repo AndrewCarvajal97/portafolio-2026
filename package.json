@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/generate-llms-txt.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images": "node scripts/optimize-images.mjs",
@@ -18,7 +18,8 @@
     "audit": "pnpm audit --audit-level=moderate",
     "audit:fix": "pnpm audit --fix",
     "outdated": "pnpm outdated",
-    "preinstall": "npx --yes only-allow pnpm"
+    "preinstall": "npx --yes only-allow pnpm",
+    "generate:llms": "node scripts/generate-llms-txt.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",

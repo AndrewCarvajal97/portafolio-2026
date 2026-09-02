@@ -62,29 +62,85 @@ export const projects: Project[] = [
     ]
   },
   {
-    id: 'gestion-contable',
-    title: 'Gestión Contable',
-    description: 'Sistema contable empresarial con facturación electrónica, conciliación bancaria y reportería fiscal.',
-    longDescription: 'Full-Stack Developer en el sistema de Gestión Contable de Texelbit. Construí módulos de facturación electrónica, libros contables, conciliación bancaria y reportería fiscal. Diseñé el motor de asientos automáticos con reglas configurables por tipo de operación, importación masiva de movimientos bancarios y exportación de formatos exigidos por la autoridad tributaria. Optimicé queries de balances y estados financieros sobre grandes volúmenes históricos.',
-    tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'Facturación Electrónica'],
+    id: 'contavia-360',
+    title: 'Contavía 360',
+    description: 'Plataforma contable todo-en-uno para contadores en Colombia: automatiza la descarga de facturas de la DIAN y la exportación de libros contables.',
+    longDescription: 'Full-Stack Developer en Contavía 360, la plataforma contable de Texelbit para contadores en Colombia. El producto ataca lo repetitivo del día a día contable: automatiza la descarga y validación de documentos electrónicos de la DIAN (parseo de XML UBL, verificación de CUFE, deduplicación y emparejamiento con el PDF), centraliza la información de todos los clientes de un contador en un solo espacio multi-empresa, y exporta libros contables listos para importar en minutos. Construí el motor de asientos automáticos con reglas configurables por tipo de operación, la conciliación bancaria con importación masiva de extractos y la reportería fiscal. Optimicé las consultas de balances y estados financieros sobre volúmenes históricos grandes.',
+    tags: ['NestJS', 'TypeScript', 'React', 'PostgreSQL', 'DIAN', 'Facturación Electrónica'],
     color: 0x22cc88,
-    image: '/gestion-contable.webp',
+    image: '/contavia-360.webp',
     links: [
-      { type: 'live', url: 'https://gestion-contable.texelbit.com/' }
+      { type: 'live', url: 'https://contavia360.com/' }
     ],
     featured: true,
     role: 'Full-Stack Developer',
     challenges: [
-      'Garantizar que cada asiento contable cumpliera partida doble e inmutabilidad temporal sin perder velocidad en cierres mensuales.',
-      'Integrarse con servicios de facturación electrónica que tienen ventanas de mantenimiento y formatos XML estrictos.',
-      'Conciliar movimientos bancarios con criterios fuzzy (monto + fecha + referencia parcial) sin generar falsos positivos.',
-      'Generar reportes fiscales reproducibles auditables, recalculables ante reclasificaciones retroactivas.'
+      'Automatizar la descarga de documentos electrónicos de la DIAN de forma confiable pese a ventanas de mantenimiento, formatos XML estrictos y respuestas inconsistentes del servicio.',
+      'Validar y deduplicar facturas por CUFE emparejando XML y PDF, evitando registros duplicados cuando un mismo documento llega por varios canales.',
+      'Diseñar un modelo multi-empresa donde un contador opera decenas de clientes con aislamiento de datos estricto y sin multiplicar el costo por consulta.',
+      'Garantizar que cada asiento cumpliera partida doble e inmutabilidad temporal sin perder velocidad en los cierres mensuales.',
+      'Conciliar movimientos bancarios con criterios fuzzy (monto + fecha + referencia parcial) sin generar falsos positivos.'
     ],
     experience: [
+      'Profundicé en la normativa colombiana de facturación electrónica: UBL 2.1, CUFE, notas crédito/débito y los formatos que exige la DIAN.',
       'Profundicé en modelado contable: cuentas T, mayores auxiliares, períodos cerrados y reaperturas controladas.',
       'Aprendí patrones de write-once / append-only para datos sensibles legalmente.',
       'Optimicé consultas analíticas con índices parciales, vistas materializadas y particionamiento por período.',
       'Maduré mi disciplina de testing: cada regla contable se cubre con casos golden replicando ejercicios reales.'
+    ]
+  },
+  {
+    id: 'nucleo-digital-competencias',
+    title: 'Fundación Núcleo Digital — Competencias',
+    description: 'Plataforma de competencias de tecnología: inscripción de equipos, evaluación con rúbrica y ranking en vivo para hackathones y olimpiadas.',
+    longDescription: 'Plataforma web de la Fundación Núcleo Digital (Bucaramanga, Santander) para organizar competencias de tecnología — hackathones, retos de programación, olimpiadas y retos de innovación y emprendimiento — dirigidas a barrios populares, comunidades y empresas. Cubre el ciclo completo del evento: creación de la convocatoria, inscripción y armado de equipos, asignación de jurados, evaluación con rúbrica multi-criterio y ranking en vivo durante la jornada. Es un proyecto de impacto social sin ánimo de lucro donde también figuro como fundador y representante legal de la fundación, además de responsable técnico de la plataforma.',
+    tags: ['React', 'TypeScript', 'Vite', 'PWA', 'Tiempo Real', 'Impacto Social'],
+    color: 0x7c5cff,
+    image: '/nucleo-digital.webp',
+    links: [
+      { type: 'live', url: 'https://competencias.fundacion-nucleodigital.org/' }
+    ],
+    featured: true,
+    role: 'Fundador & Full-Stack Developer',
+    challenges: [
+      'Diseñar un modelo de rúbrica multi-criterio configurable por competencia, con pesos por criterio y varios jurados por equipo, sin que la evaluación se vuelva confusa para quien califica desde el celular.',
+      'Mantener el ranking actualizado en vivo durante la jornada, resolviendo empates y calificaciones parciales mientras los jurados aún están enviando notas.',
+      'Servir la plataforma en contextos de conectividad limitada: instalación como PWA, assets ligeros y tolerancia a cortes de red durante la evaluación.',
+      'Hacer la inscripción de equipos accesible para participantes sin experiencia previa en herramientas técnicas, minimizando fricción y campos obligatorios.'
+    ],
+    experience: [
+      'Aprendí a construir producto con restricciones reales de accesibilidad y conectividad, no solo con el escenario ideal de laboratorio.',
+      'Consolidé mi manejo de PWA: manifest, instalabilidad, estrategias de cache y comportamiento offline.',
+      'Practiqué el diseño de estado en tiempo real (rankings, evaluaciones concurrentes) manteniendo consistencia entre varios evaluadores.',
+      'Asumí responsabilidad más allá del código: constituir la fundación, definir su misión y sostener la operación técnica de los eventos.'
+    ]
+  },
+  {
+    id: 'asy-neuronal',
+    title: 'Asy Neuronal',
+    description: 'Empresa de ingeniería de software: agentes IA en producción (MCP, RAG, multi-agente) y modernización de sistemas legados para Colombia y LATAM.',
+    longDescription: 'Asy Neuronal es la empresa de ingeniería de software que co-construyo desde Bucaramanga para Colombia y toda Latinoamérica. Su propuesta es concreta: poner el primer agente de IA de una empresa en producción en seis semanas, conectado a sus datos y procesos reales — cotizadores automáticos que consultan el ERP, soporte 24/7 por WhatsApp, RAG sobre documentación corporativa — y no como demo, sino operando. La segunda línea es la modernización de sistemas legados por fases hacia arquitecturas cloud-native. Diseñé y desarrollé el sitio y la identidad digital, y defino la arquitectura de las soluciones que entregamos: servidores MCP, pipelines de RAG y orquestación multi-agente sobre los sistemas que el cliente ya tiene.',
+    tags: ['AI Agents', 'MCP Servers', 'RAG', 'TypeScript', 'Cloud', 'Modernización Legacy'],
+    color: 0x7d5cff,
+    image: '/asy-neuronal.webp',
+    links: [
+      { type: 'live', url: 'https://asy-neuronal.com/' }
+    ],
+    featured: true,
+    role: 'Co-fundador & Arquitecto de Soluciones IA',
+    challenges: [
+      'Comprimir el camino de “idea de IA” a agente en producción a seis semanas sin que el alcance se desborde: un caso de uso, datos reales, precio fijo.',
+      'Conectar agentes a sistemas empresariales existentes (ERPs, CRMs, bases legadas) vía servidores MCP sin pedirle al cliente que migre nada primero.',
+      'Construir RAG sobre documentación corporativa heterogénea manteniendo respuestas trazables a la fuente, que es lo que decide si el negocio confía en el agente.',
+      'Migrar sistemas legados por fases manteniendo la operación viva, sin ventanas de corte que el cliente no puede permitirse.',
+      'Traducir capacidades técnicas de IA a un lenguaje de ROI que un decisor no técnico pueda evaluar en un diagnóstico de 48 horas.'
+    ],
+    experience: [
+      'Aprendí a empaquetar trabajo de IA como oferta con alcance y precio cerrados, en vez de consultoría abierta por horas.',
+      'Profundicé en MCP como capa de integración estándar entre modelos y sistemas empresariales reales.',
+      'Consolidé patrones de RAG productivo: chunking por estructura, citación de fuentes y evaluación de calidad de respuestas.',
+      'Desarrollé criterio para decidir cuándo un problema se resuelve con un agente y cuándo con software determinista mucho más barato.',
+      'Sumé la dimensión comercial y de posicionamiento: SEO, narrativa de producto y relación directa con clientes.'
     ]
   },
   {

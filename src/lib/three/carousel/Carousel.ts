@@ -10,6 +10,7 @@ import { Tween, Easing } from '@tweenjs/tween.js';
 import { ProjectCard } from './ProjectCard';
 import { SceneManager } from '../core/SceneManager';
 import { getResponsiveCarouselConfig, getResponsiveCameraConfig, ANIMATION_DURATION } from '../../../data/config';
+import { trackProjectOpen } from '../../analytics';
 import type { Project } from '../../../types/project';
 import type { CarouselState, CarouselEvent, CarouselEventHandler, CarouselConfig, CameraConfig } from '../../../types/carousel';
 
@@ -270,6 +271,9 @@ export class Carousel {
       project,
       mesh
     });
+
+    // Analytics: which project the user just opened.
+    trackProjectOpen(project.id, project.title);
 
     const cameraTween = new Tween(camera.position)
       .to(
