@@ -150,7 +150,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé AIA Docs, la plataforma central de documentación técnica, operativa y comercial del ecosistema AIA. Incluye versionado por release, control de acceso por rol, búsqueda semántica con embeddings vectoriales y un editor MDX integrado. Sirve como única fuente de verdad para onboarding de empleados, manuales de restaurantes y especificaciones de APIs internas.',
     tags: ['Next.js', 'TypeScript', 'MDX', 'Pinecone', 'Embeddings'],
     color: 0x4488ff,
-    image: '/proyectos-protegidos.webp',
+    image: '/dpjd.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -254,7 +254,7 @@ export const projects: Project[] = [
     longDescription: 'Versión móvil del dashboard administrativo de AIA. Replica las funcionalidades de gestión del web (operación de restaurantes, métricas, configuración, órdenes, equipo) y embebe los mismos agentes de IA del dashboard para que los gerentes puedan consultarles en cualquier momento. Construida con React Native + Expo, consume las mismas APIs y comparte tipos/SDK con la plataforma web a través de un paquete monorepo, garantizando paridad funcional entre ambos clientes.',
     tags: ['React Native', 'Expo', 'TypeScript', 'AI Agents', 'SSE', 'Monorepo'],
     color: 0x00e0a8,
-    image: '/proyectos-protegidos.webp',
+    image: '/santander-accesible.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
