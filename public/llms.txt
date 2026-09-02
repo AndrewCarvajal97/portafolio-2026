@@ -26,7 +26,7 @@ Stack: NestJS, TypeScript, React 19, PostgreSQL, Stripe Connect, AI Agents
 
 Tech Leader en AIA Technology. Contribuí al desarrollo de una plataforma SaaS completa para gestión de restaurantes usando NestJS, PostgreSQL, React 19 y TypeScript. Implementé pagos divididos con Stripe Connect (platform, restaurant_pool, direct_branch), integración con Catering Rewards API, y conectores de delivery (DoorDash, Uber Direct, Cartwheel). Trabajé sobre una arquitectura multi-tenant existente en PostgreSQL (stored procedures y auditoría) aportando módulos, integraciones y mejoras. Desarrollé agentes de IA para asistentes de gerentes con streaming SSE y renderizado de gráficos.
 
-### INCConnection — Classroom & App — https://dev.admin.innconection-plus.texelbit.com/classroom
+### INCConnection — Classroom & App — https://plusadmin.incconnection.edu.co/login
 
 Rol: Full-Stack Developer
 Stack: NestJS, TypeScript, React, Google Workspace, OAuth 2.0, PostgreSQL
@@ -89,7 +89,7 @@ Stack: React Native, Expo, TypeScript, AI Agents, SSE, Monorepo
 
 Versión móvil del dashboard administrativo de AIA. Replica las funcionalidades de gestión del web (operación de restaurantes, métricas, configuración, órdenes, equipo) y embebe los mismos agentes de IA del dashboard para que los gerentes puedan consultarles en cualquier momento. Construida con React Native + Expo, consume las mismas APIs y comparte tipos/SDK con la plataforma web a través de un paquete monorepo, garantizando paridad funcional entre ambos clientes.
 
-### INCConnection Mobile — https://dev.app.innconection.texelbit.com/
+### INCConnection Mobile — https://plus.incconnection.edu.co/
 
 Rol: Full-Stack Developer
 Stack: React Native, Expo, TypeScript, Google Calendar, Push Notifications

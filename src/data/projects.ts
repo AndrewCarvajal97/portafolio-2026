@@ -43,8 +43,8 @@ export const projects: Project[] = [
     color: 0x8844ff,
     image: '/innco-completo.webp',
     links: [
-      { type: 'live', url: 'https://dev.admin.innconection-plus.texelbit.com/classroom', label: 'Admin Classroom' },
-      { type: 'live', url: 'https://dev.app.innconection.texelbit.com/', label: 'App Estudiantes' }
+      { type: 'live', url: 'https://plusadmin.incconnection.edu.co/login', label: 'Admin Classroom' },
+      { type: 'live', url: 'https://plus.incconnection.edu.co/', label: 'App Estudiantes' }
     ],
     featured: true,
     role: 'Full-Stack Developer',
@@ -150,7 +150,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé AIA Docs, la plataforma central de documentación técnica, operativa y comercial del ecosistema AIA. Incluye versionado por release, control de acceso por rol, búsqueda semántica con embeddings vectoriales y un editor MDX integrado. Sirve como única fuente de verdad para onboarding de empleados, manuales de restaurantes y especificaciones de APIs internas.',
     tags: ['Next.js', 'TypeScript', 'MDX', 'Pinecone', 'Embeddings'],
     color: 0x4488ff,
-    image: '/dpjd.webp',
+    image: '/proyectos-protegidos.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -254,7 +254,7 @@ export const projects: Project[] = [
     longDescription: 'Versión móvil del dashboard administrativo de AIA. Replica las funcionalidades de gestión del web (operación de restaurantes, métricas, configuración, órdenes, equipo) y embebe los mismos agentes de IA del dashboard para que los gerentes puedan consultarles en cualquier momento. Construida con React Native + Expo, consume las mismas APIs y comparte tipos/SDK con la plataforma web a través de un paquete monorepo, garantizando paridad funcional entre ambos clientes.',
     tags: ['React Native', 'Expo', 'TypeScript', 'AI Agents', 'SSE', 'Monorepo'],
     color: 0x00e0a8,
-    image: '/santander-accesible.webp',
+    image: '/proyectos-protegidos.webp',
     links: [
       { type: 'live', url: 'https://askaia.ai' }
     ],
@@ -282,7 +282,7 @@ export const projects: Project[] = [
     color: 0xaa66ff,
     image: '/incconnection-mobile.webp',
     links: [
-      { type: 'live', url: 'https://dev.app.innconection.texelbit.com/' }
+      { type: 'live', url: 'https://plus.incconnection.edu.co/' }
     ],
     featured: true,
     role: 'Full-Stack Developer',
@@ -436,7 +436,7 @@ export const projects: Project[] = [
     longDescription: 'Diseñé y desarrollé el sitio web corporativo de Distribuciones Pastor Julio Delgado, empresa con cobertura nacional, centros de distribución y miles de clientes. La experiencia presenta su trayectoria, marcas propias, cobertura, centros de distribución, oportunidades laborales y canales de contacto de forma clara para clientes y aliados comerciales.',
     tags: ['JavaScript', 'HTML5', 'CSS3', 'Diseño Web', 'Experiencia de Usuario'],
     color: 0xff8844,
-    image: '/proyectos-protegidos.webp',
+    image: '/dpjd.webp',
     links: [
       { type: 'live', url: 'https://www.dpjd.com/#/' }
     ],
@@ -460,7 +460,7 @@ export const projects: Project[] = [
     longDescription: 'Desarrollé Santander Accesible, una plataforma de turismo inclusivo para la Gobernación de Santander. El proyecto facilita el descubrimiento de destinos y experiencias del departamento con una experiencia orientada a personas con distintas formas de movilidad, visión y audición, conectando el patrimonio regional con una navegación digital más accesible.',
     tags: ['JavaScript', 'HTML5', 'CSS3', 'Accesibilidad', 'Turismo', 'Experiencia de Usuario'],
     color: 0x22aa88,
-    image: '/proyectos-protegidos.webp',
+    image: '/santander-accesible.webp',
     links: [
       { type: 'live', url: 'https://dev.turismo-santander.desarrollos-pablo-carvajal.com/' }
     ],
